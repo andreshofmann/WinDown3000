@@ -1,6 +1,14 @@
 # WinDown 3000
 
-A fast, lightweight Markdown editor for Windows, ported from MacDown 3000.
+A fast, lightweight Markdown viewer and editor for macOS and Windows, ported from MacDown 3000.
+
+## Git Commit Rules
+
+- **Never** add `Co-authored-by`, `Signed-off-by`, or any trailer that references Claude, AI, Copilot, or any tool.
+- **Never** mention Claude Code, AI assistance, or automation in commit messages.
+- Commit messages should read as if written by a human developer. Keep them concise and technical.
+- Use the project's existing git author config — do not override `user.name` or `user.email`.
+- Do not use `--no-verify` or skip hooks.
 
 ## Development Paradigm
 
