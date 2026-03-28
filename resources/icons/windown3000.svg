@@ -5,31 +5,35 @@
       <stop offset="100%" style="stop-color:#1d4ed8"/>
     </linearGradient>
     <linearGradient id="shine" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.2"/>
-      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.15"/>
+      <stop offset="50%" style="stop-color:#ffffff;stop-opacity:0"/>
     </linearGradient>
   </defs>
 
   <!-- Rounded square background -->
   <rect x="32" y="32" width="448" height="448" rx="64" ry="64" fill="url(#bg)"/>
-  <rect x="32" y="32" width="448" height="224" rx="64" ry="64" fill="url(#shine)"/>
+  <rect x="32" y="32" width="448" height="448" rx="64" ry="64" fill="url(#shine)"/>
 
-  <!-- Markdown "M" arrow-down symbol -->
-  <g transform="translate(256,240)" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Left pillar of M -->
-    <line x1="-120" y1="80" x2="-120" y2="-80"/>
-    <!-- Left diagonal -->
-    <line x1="-120" y1="-80" x2="0" y2="20"/>
-    <!-- Right diagonal -->
-    <line x1="0" y1="20" x2="120" y2="-80"/>
-    <!-- Right pillar of M -->
-    <line x1="120" y1="-80" x2="120" y2="80"/>
+  <!-- "W" shape — the Markdown M rotated 180 degrees -->
+  <!-- Reads as: left pillar down, diagonal to center valley, diagonal back up, right pillar down -->
+  <g transform="translate(256,232)" fill="none" stroke="#ffffff" stroke-width="30" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Left pillar -->
+    <line x1="-130" y1="-90" x2="-130" y2="90"/>
+    <!-- Left diagonal down to valley -->
+    <line x1="-130" y1="90" x2="-45" y2="-10"/>
+    <!-- Center V bottom -->
+    <line x1="-45" y1="-10" x2="0" y2="50"/>
+    <line x1="0" y1="50" x2="45" y2="-10"/>
+    <!-- Right diagonal down to valley -->
+    <line x1="45" y1="-10" x2="130" y2="90"/>
+    <!-- Right pillar -->
+    <line x1="130" y1="-90" x2="130" y2="90"/>
   </g>
 
   <!-- Down arrow (the "Down" in WinDown) -->
-  <g transform="translate(256,390)" fill="none" stroke="#60a5fa" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">
-    <line x1="0" y1="-30" x2="0" y2="30"/>
-    <line x1="-30" y1="0" x2="0" y2="30"/>
-    <line x1="30" y1="0" x2="0" y2="30"/>
+  <g transform="translate(256,395)" fill="none" stroke="#93c5fd" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="0" y1="-25" x2="0" y2="25"/>
+    <line x1="-25" y1="0" x2="0" y2="25"/>
+    <line x1="25" y1="0" x2="0" y2="25"/>
   </g>
 </svg>
