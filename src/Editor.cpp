@@ -255,6 +255,16 @@ void Editor::toggleItalic()
     wrapSelection("*", "*");
 }
 
+void Editor::indentSelection()
+{
+    handleTab(false);
+}
+
+void Editor::unindentSelection()
+{
+    handleTab(true);
+}
+
 void Editor::handleBackspace()
 {
     if (m_prefs->editorCompleteMatchingCharacters()) {

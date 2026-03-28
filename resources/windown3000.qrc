@@ -30,6 +30,29 @@
         <!-- App icon -->
         <file alias="icons/windown3000.svg">icons/windown3000.svg</file>
 
+        <!-- Toolbar icons (from MacDown 3000) -->
+        <file alias="icons/toolbar/bold.png">icons/toolbar/ToolbarIconBold.png</file>
+        <file alias="icons/toolbar/italic.png">icons/toolbar/ToolbarIconItalic.png</file>
+        <file alias="icons/toolbar/underline.png">icons/toolbar/ToolbarIconUnderlined.png</file>
+        <file alias="icons/toolbar/h1.png">icons/toolbar/ToolbarIconHeading1.png</file>
+        <file alias="icons/toolbar/h2.png">icons/toolbar/ToolbarIconHeading2.png</file>
+        <file alias="icons/toolbar/h3.png">icons/toolbar/ToolbarIconHeading3.png</file>
+        <file alias="icons/toolbar/ul.png">icons/toolbar/ToolbarIconUnorderedList.png</file>
+        <file alias="icons/toolbar/ol.png">icons/toolbar/ToolbarIconOrderedList.png</file>
+        <file alias="icons/toolbar/blockquote.png">icons/toolbar/ToolbarIconBlockquote.png</file>
+        <file alias="icons/toolbar/code.png">icons/toolbar/ToolbarIconInlineCode.png</file>
+        <file alias="icons/toolbar/link.png">icons/toolbar/ToolbarIconLink.png</file>
+        <file alias="icons/toolbar/image.png">icons/toolbar/ToolbarIconImage.png</file>
+        <file alias="icons/toolbar/copyhtml.png">icons/toolbar/ToolbarIconCopyHTML.png</file>
+        <file alias="icons/toolbar/comment.png">icons/toolbar/ToolbarIconComment.png</file>
+        <file alias="icons/toolbar/highlight.png">icons/toolbar/ToolbarIconHighlight.png</file>
+        <file alias="icons/toolbar/strikethrough.png">icons/toolbar/ToolbarIconStrikethrough.png</file>
+        <file alias="icons/toolbar/shift-left.png">icons/toolbar/ToolbarIconShiftLeft.png</file>
+        <file alias="icons/toolbar/shift-right.png">icons/toolbar/ToolbarIconShiftRight.png</file>
+        <file alias="icons/toolbar/layout.png">icons/toolbar/ToolbarIconEditorAndPreview.png</file>
+        <file alias="icons/toolbar/hide-editor.png">icons/toolbar/ToolbarIconHideEditor.png</file>
+        <file alias="icons/toolbar/hide-preview.png">icons/toolbar/ToolbarIconHidePreview.png</file>
+
         <!-- Extensions -->
         <file alias="extensions/tasklist.js">extensions/tasklist.js</file>
         <file alias="extensions/mermaid.min.js">extensions/mermaid.min.js</file>

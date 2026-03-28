@@ -24,6 +24,8 @@ public:
     // Public formatting actions (called from MainWindow menus/toolbar)
     void toggleBold();
     void toggleItalic();
+    void indentSelection();
+    void unindentSelection();
 
 signals:
     void wordCountChanged(int words, int chars);

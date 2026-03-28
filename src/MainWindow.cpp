@@ -9,6 +9,7 @@
 
 #include <QAction>
 #include <QApplication>
+#include <QClipboard>
 #include <QCloseEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -24,6 +25,7 @@
 #include <QStatusBar>
 #include <QTextStream>
 #include <QToolBar>
+#include <QToolButton>
 #include <QUrl>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -418,71 +420,100 @@ void MainWindow::createMenus()
 
 void MainWindow::createToolBar()
 {
+    // Matches MacDown 3000's toolbar layout exactly:
+    // [Shift Left|Shift Right] [Bold|Italic|Underline] [H1|H2|H3]
+    //   [UL|OL]  Blockquote  Code  Link  Image  Copy HTML
+    //   [Layout toggle]
+
     QToolBar *toolbar = addToolBar(tr("Formatting"));
     toolbar->setMovable(false);
+    toolbar->setIconSize(QSize(20, 20));
+    toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    toolbar->addAction(tr("B"), m_editor, &Editor::toggleBold)
-        ->setToolTip(tr("Bold (Ctrl+B)"));
+    auto icon = [](const QString &name) {
+        return QIcon(QStringLiteral(":/icons/toolbar/%1.png").arg(name));
+    };
 
-    toolbar->addAction(tr("I"), m_editor, &Editor::toggleItalic)
-        ->setToolTip(tr("Italic (Ctrl+I)"));
+    // -- Shift Left / Shift Right --
+    toolbar->addAction(icon("shift-left"), tr("Shift Left"),
+                       m_editor, &Editor::unindentSelection)
+        ->setToolTip(tr("Shift Left"));
 
-    toolbar->addSeparator();
-
-    toolbar->addAction(tr("H1"), [this]() {
-        QTextCursor cur = m_editor->textCursor();
-        cur.movePosition(QTextCursor::StartOfBlock);
-        cur.insertText("# ");
-    });
-
-    toolbar->addAction(tr("H2"), [this]() {
-        QTextCursor cur = m_editor->textCursor();
-        cur.movePosition(QTextCursor::StartOfBlock);
-        cur.insertText("## ");
-    });
-
-    toolbar->addAction(tr("H3"), [this]() {
-        QTextCursor cur = m_editor->textCursor();
-        cur.movePosition(QTextCursor::StartOfBlock);
-        cur.insertText("### ");
-    });
+    toolbar->addAction(icon("shift-right"), tr("Shift Right"),
+                       m_editor, &Editor::indentSelection)
+        ->setToolTip(tr("Shift Right"));
 
     toolbar->addSeparator();
 
-    toolbar->addAction(tr("UL"), [this]() {
+    // -- Text Styles: Bold, Italic, Underline --
+    toolbar->addAction(icon("bold"), tr("Strong"), m_editor, &Editor::toggleBold)
+        ->setToolTip(tr("Strong (Ctrl+B)"));
+
+    toolbar->addAction(icon("italic"), tr("Emphasize"), m_editor, &Editor::toggleItalic)
+        ->setToolTip(tr("Emphasize (Ctrl+I)"));
+
+    toolbar->addAction(icon("underline"), tr("Underline"), [this]() {
+        QTextCursor cur = m_editor->textCursor();
+        if (cur.hasSelection()) {
+            QString sel = cur.selectedText();
+            cur.insertText("_" + sel + "_");
+        } else {
+            cur.insertText("__");
+            cur.movePosition(QTextCursor::Left);
+            m_editor->setTextCursor(cur);
+        }
+    })->setToolTip(tr("Underline"));
+
+    toolbar->addSeparator();
+
+    // -- Headings: H1, H2, H3 --
+    auto insertHeading = [this](int level) {
+        QTextCursor cur = m_editor->textCursor();
+        cur.movePosition(QTextCursor::StartOfBlock);
+        QString line = cur.block().text();
+        static QRegularExpression headRe(R"(^#{1,6}\s*)");
+        auto match = headRe.match(line);
+        if (match.hasMatch()) {
+            cur.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, match.capturedLength());
+            cur.removeSelectedText();
+        }
+        cur.insertText(QString(level, '#') + " ");
+    };
+
+    toolbar->addAction(icon("h1"), tr("Heading 1"), [=]() { insertHeading(1); })
+        ->setToolTip(tr("Heading 1 (Ctrl+1)"));
+    toolbar->addAction(icon("h2"), tr("Heading 2"), [=]() { insertHeading(2); })
+        ->setToolTip(tr("Heading 2 (Ctrl+2)"));
+    toolbar->addAction(icon("h3"), tr("Heading 3"), [=]() { insertHeading(3); })
+        ->setToolTip(tr("Heading 3 (Ctrl+3)"));
+
+    toolbar->addSeparator();
+
+    // -- Lists: Unordered, Ordered --
+    toolbar->addAction(icon("ul"), tr("Unordered List"), [this]() {
         QTextCursor cur = m_editor->textCursor();
         cur.movePosition(QTextCursor::StartOfBlock);
         cur.insertText("- ");
     })->setToolTip(tr("Unordered List"));
 
-    toolbar->addAction(tr("OL"), [this]() {
+    toolbar->addAction(icon("ol"), tr("Ordered List"), [this]() {
         QTextCursor cur = m_editor->textCursor();
         cur.movePosition(QTextCursor::StartOfBlock);
         cur.insertText("1. ");
     })->setToolTip(tr("Ordered List"));
 
-    toolbar->addAction(tr(">"), [this]() {
+    toolbar->addSeparator();
+
+    // -- Block elements --
+    toolbar->addAction(icon("blockquote"), tr("Blockquote"), [this]() {
         QTextCursor cur = m_editor->textCursor();
         cur.movePosition(QTextCursor::StartOfBlock);
         cur.insertText("> ");
     })->setToolTip(tr("Blockquote"));
 
-    toolbar->addSeparator();
-
-    toolbar->addAction(tr("Link"), [this]() {
-        m_editor->textCursor().insertText("[text](url)");
-    })->setToolTip(tr("Insert Link (Ctrl+L)"));
-
-    toolbar->addAction(tr("Image"), [this]() {
-        m_editor->textCursor().insertText("![alt](url)");
-    })->setToolTip(tr("Insert Image"));
-
-    toolbar->addAction(tr("Code"), [this]() {
+    toolbar->addAction(icon("code"), tr("Inline Code"), [this]() {
         QTextCursor cur = m_editor->textCursor();
         if (cur.hasSelection()) {
-            // Inline code
-            int start = cur.selectionStart();
-            int end = cur.selectionEnd();
             QString sel = cur.selectedText();
             cur.insertText("`" + sel + "`");
         } else {
@@ -490,7 +521,54 @@ void MainWindow::createToolBar()
             cur.movePosition(QTextCursor::Up);
             m_editor->setTextCursor(cur);
         }
-    })->setToolTip(tr("Code Block"));
+    })->setToolTip(tr("Inline Code"));
+
+    toolbar->addAction(icon("link"), tr("Link"), [this]() {
+        QTextCursor cur = m_editor->textCursor();
+        if (cur.hasSelection()) {
+            QString sel = cur.selectedText();
+            cur.insertText("[" + sel + "](url)");
+        } else {
+            cur.insertText("[text](url)");
+        }
+    })->setToolTip(tr("Link"));
+
+    toolbar->addAction(icon("image"), tr("Image"), [this]() {
+        QTextCursor cur = m_editor->textCursor();
+        if (cur.hasSelection()) {
+            QString sel = cur.selectedText();
+            cur.insertText("![" + sel + "](url)");
+        } else {
+            cur.insertText("![alt](url)");
+        }
+    })->setToolTip(tr("Image"));
+
+    toolbar->addSeparator();
+
+    // -- Copy HTML --
+    toolbar->addAction(icon("copyhtml"), tr("Copy HTML"), [this]() {
+        QString html = m_document->renderer()->renderToHtml(m_document->markdown());
+        QApplication::clipboard()->setText(html);
+        statusBar()->showMessage(tr("HTML copied to clipboard"), 3000);
+    })->setToolTip(tr("Copy HTML"));
+
+    // -- Flexible space then Layout toggle --
+    QWidget *spacer = new QWidget;
+    spacer->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+    toolbar->addWidget(spacer);
+
+    // Layout dropdown menu
+    auto *layoutBtn = new QToolButton;
+    layoutBtn->setIcon(icon("layout"));
+    layoutBtn->setToolTip(tr("Layout"));
+    layoutBtn->setPopupMode(QToolButton::InstantPopup);
+    QMenu *layoutMenu = new QMenu(layoutBtn);
+    layoutMenu->addAction(icon("hide-editor"), tr("Toggle Editor (Ctrl+E)"),
+                          this, &MainWindow::onToggleEditor);
+    layoutMenu->addAction(icon("hide-preview"), tr("Toggle Preview (Ctrl+P)"),
+                          this, &MainWindow::onTogglePreview);
+    layoutBtn->setMenu(layoutMenu);
+    toolbar->addWidget(layoutBtn);
 }
 
 void MainWindow::createStatusBar()
