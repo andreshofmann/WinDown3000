@@ -232,7 +232,6 @@ void MainWindow::onTextChanged()
 
 void MainWindow::onHtmlReady(const QString &html)
 {
-    // Preserve scroll position across re-renders
     m_syncingScroll = true;
     m_preview->setHtml(html);
     m_syncingScroll = false;
@@ -410,9 +409,11 @@ void MainWindow::createMenus()
         QMessageBox::about(this, tr("About WinDown 3000"),
             tr("<h2>WinDown 3000</h2>"
                "<p>Version %1</p>"
-               "<p>A free Markdown editor for Windows.</p>"
+               "<p>A free Markdown viewer and editor.</p>"
+               "<p>Developed and maintained by Andrew Hofmann.</p>"
                "<p>Based on MacDown 3000 by Schuyler Erle, "
-               "which continues the legacy of Mou and MacDown.</p>"
+               "which continues the legacy of Mou by Chen Luo "
+               "and MacDown by Tzu-ping Chung.</p>"
                "<p>Licensed under the MIT License.</p>")
             .arg(QApplication::applicationVersion()));
     });

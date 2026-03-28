@@ -122,8 +122,42 @@ void PreviewWidget::printToPdf(const QString &filePath)
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
+#include <QDesktopServices>
 #include <QPageLayout>
 #include <QPageSize>
+
+/// Custom page that blocks navigation to external links and handles
+/// checkbox toggle URLs.
+class PreviewPage : public QWebEnginePage
+{
+    Q_OBJECT
+public:
+    using QWebEnginePage::QWebEnginePage;
+signals:
+    void checkboxToggled(int index);
+    void linkClicked(const QUrl &url);
+protected:
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool) override
+    {
+        // Allow initial content load
+        if (type != NavigationTypeLinkClicked)
+            return true;
+
+        // Handle checkbox toggle scheme
+        if (url.scheme() == "x-windown-checkbox" && url.host() == "toggle") {
+            int idx = url.path().mid(1).toInt();
+            emit checkboxToggled(idx);
+            return false;
+        }
+
+        // Block all link navigation — open external links in system browser
+        if (url.scheme() == "http" || url.scheme() == "https") {
+            QDesktopServices::openUrl(url);
+        }
+        emit linkClicked(url);
+        return false;
+    }
+};
 
 PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
     : QWidget(parent)
@@ -134,16 +168,16 @@ PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
     layout->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(m_webView);
 
+    // Use custom page that blocks link navigation
+    auto *page = new PreviewPage(m_webView);
+    m_webView->setPage(page);
+
     m_webView->settings()->setAttribute(QWebEngineSettings::JavascriptEnabled, true);
     m_webView->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
 
-    // Handle navigation for checkbox toggles
-    connect(m_webView->page(), &QWebEnginePage::urlChanged, this, [this](const QUrl &url) {
-        if (url.scheme() == "x-windown-checkbox" && url.host() == "toggle") {
-            int idx = url.path().mid(1).toInt(); // strip leading /
-            emit checkboxToggled(idx);
-        }
-    });
+    // Forward signals from custom page
+    connect(page, &PreviewPage::checkboxToggled, this, &PreviewWidget::checkboxToggled);
+    connect(page, &PreviewPage::linkClicked, this, &PreviewWidget::linkClicked);
 
     initWebView();
 }
@@ -151,6 +185,9 @@ PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
 PreviewWidget::~PreviewWidget() = default;
 
 void PreviewWidget::initWebView() {}
+
+// Include the MOC for the PreviewPage class defined in this .cpp
+#include "PreviewWidget.moc"
 
 void PreviewWidget::setHtml(const QString &html, const QUrl &baseUrl)
 {
