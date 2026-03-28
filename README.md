@@ -1,129 +1,145 @@
 # WinDown 3000
 
+### The fastest way to view and edit Markdown on Windows.
+
 [![Windows Build](https://github.com/andreshofmann/WinDown3000/workflows/Windows%20Build/badge.svg)](https://github.com/andreshofmann/WinDown3000/actions)
+[![GitHub release](https://img.shields.io/github/v/release/andreshofmann/WinDown3000)](https://github.com/andreshofmann/WinDown3000/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/andreshofmann/WinDown3000/total)](https://github.com/andreshofmann/WinDown3000/releases)
 
-WinDown 3000 is a free, lightweight Markdown editor for Windows with live preview. It is a port of [MacDown 3000](https://github.com/schuyler/macdown3000), which continues the legacy started by Chen Luo's [Mou](http://25.io/mou/) and carried forward by Tzu-ping Chung's [MacDown](https://macdown.uranusjr.com).
+---
 
-Download from the [releases](https://github.com/andreshofmann/WinDown3000/releases) page.
+## [Download WinDown3000-SingleFile.exe](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-SingleFile.exe)
 
-## About WinDown 3000
+**One file. No install. Just run it.**
 
-WinDown 3000 brings the MacDown experience to Windows. Built with Qt and C++, it is fast, portable, and ships as a single executable with no installer required.
+> Also available as a [portable zip](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-Windows-x64.zip) or [installer with .md file association](https://github.com/andreshofmann/WinDown3000/releases/latest).
 
-### System Requirements
+---
 
-- Windows 10 or later (x64)
-- Microsoft Edge WebView2 Runtime (pre-installed on Windows 10/11)
+## What is WinDown 3000?
+
+WinDown 3000 is a free, lightweight **Markdown viewer and editor** for Windows. Open any `.md` file and instantly see a beautifully rendered preview alongside the source. No bloat, no account required, no internet needed.
+
+Built with C++ and Qt for native speed. Based on [MacDown 3000](https://github.com/schuyler/macdown3000), the popular macOS Markdown editor.
+
+### Use it to
+
+- **View** README files, documentation, notes, and any Markdown content with live-rendered preview
+- **Edit** Markdown with syntax highlighting, auto-completion, and instant preview
+- **Export** your documents to HTML or PDF
+- **Present** technical docs with code highlighting, math notation, and diagrams
+
+### Why WinDown 3000?
+
+| | WinDown 3000 | VS Code | Notepad++ | Online editors |
+|---|---|---|---|---|
+| Single file, no install | Yes | No | No | N/A |
+| Instant live preview | Yes | Extension needed | No | Some |
+| Math/diagram support | Yes | Extension needed | No | Some |
+| Works offline | Yes | Yes | Yes | No |
+| Lightweight | ~30 MB | ~400 MB | ~5 MB | N/A |
+| Free & open source | Yes | Yes | Yes | Varies |
 
 ## Features
 
-### Live Preview & Markdown Rendering
+### Instant Markdown Preview
 
-WinDown 3000 uses [Hoedown](https://github.com/hoedown/hoedown) to convert Markdown to HTML with live preview as you type. It supports:
+Open a file and see it rendered in real time, side-by-side with the source. The split-pane view with synchronized scrolling makes it easy to read and edit at the same time.
 
-- **GitHub Flavored Markdown** including tables, strikethrough, and autolinks
+### Full Markdown Support
+
+- **GitHub Flavored Markdown** — tables, strikethrough, autolinks, task lists
 - **Fenced code blocks** with language identifiers
-- **Task lists** with interactive checkboxes
 - **Footnotes**, superscript, highlight, and underline extensions
-- **Customizable rendering options** in Preferences
+- **CommonMark** compatible
 
-### Syntax Highlighting
+### Code Syntax Highlighting
 
-- **Editor**: Markdown syntax highlighting with 15 editor themes ported from MacDown
-- **Preview**: Code block highlighting via [Prism](https://prismjs.com) supporting 200+ languages
+Code blocks are highlighted in both the editor and preview using [Prism](https://prismjs.com), supporting 200+ programming languages.
 
-### Additional Rendering
+### Math, Diagrams, and More
 
-- **Math notation** via MathJax (`$$...$$`, `\[...\]`, `\(...\)`, optional `$...$`)
-- **Diagrams** via Mermaid (flowcharts, sequence, Gantt) and Graphviz
-- **Jekyll front-matter** support
-- **Export to HTML or PDF**
+- **Math notation** via MathJax — `$$E=mc^2$$`, `\[...\]`, `\(...\)`
+- **Mermaid diagrams** — flowcharts, sequence diagrams, Gantt charts
+- **Graphviz** — dot language diagrams
+- **Jekyll front-matter** detection
 
 ### Editor Features
 
-- **Auto-completion**: Bracket/quote pairing, smart list continuation, auto-numbered lists
-- **Scroll sync**: Bidirectional editor-preview scroll synchronization
-- **Smart paste**: Paste a URL over selected text to create a Markdown link
-- **Formatting toolbar**: Bold, italic, headings, lists, links, images, code
-- **Keyboard shortcuts**: Full set matching MacDown 3000
-- **Drag-and-drop**: Open files by dropping them onto the window
-- **Word count**: Live word and character count in the status bar
+- **15 editor themes** — Tomorrow, Solarized, Mou, Writer, and more
+- **8 preview CSS themes** — GitHub, Clearness, Solarized
+- **Auto-completion** — bracket/quote pairing, smart list continuation
+- **Find and Replace** — with regex, case-sensitive, and whole-word options
+- **Formatting toolbar** — bold, italic, headings, lists, links, code
+- **Keyboard shortcuts** — full set for efficient editing
+- **Word count** — live word and character count
+- **Drag-and-drop** — open files by dropping onto the window
+- **Export** — HTML and PDF
 
-### Themes
+### Customizable
 
-**Editor themes** (ported from MacDown 3000):
-Mou Fresh Air, Mou Night, Mou Paper, Solarized Light/Dark, Tomorrow, Tomorrow Blue, Writer (+ enhanced variants)
+Full preferences dialog with control over every aspect: font, theme, margins, Markdown extensions, preview rendering, code highlighting, and more.
 
-**Preview CSS themes**:
-GitHub, GitHub2, GitHub 2020, GitHub Tomorrow (dark), Clearness, Clearness Dark, Solarized Light/Dark
+## System Requirements
+
+- Windows 10 or later (x64)
+- No other dependencies
 
 ## Building from Source
 
 ### Requirements
 
 - CMake 3.21+
-- Qt 6.5+ (with WebEngine module for development builds)
-- C++17 compiler (MSVC 2019+ recommended on Windows)
-- Git
+- Qt 6.5+ (with WebEngine module)
+- C++17 compiler (MSVC 2019+)
 
-### Build (Windows)
+### Build
 
 ```bash
 git clone https://github.com/andreshofmann/WinDown3000.git
 cd WinDown3000
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
-```
-
-### Build (Development on macOS/Linux)
-
-For development, the app falls back to QWebEngineView instead of WebView2:
-
-```bash
-cmake -B build -DWINDOWN_USE_WEBVIEW2=OFF
-cmake --build build
-```
-
-### Static Single-Exe Build
-
-For a fully portable single executable:
-
-```bash
-cmake -B build -DCMAKE_BUILD_TYPE=Release -DWINDOWN_STATIC_BUILD=ON -DCMAKE_PREFIX_PATH=/path/to/static-qt
-cmake --build build --config Release
+ctest --test-dir build --build-config Release --output-on-failure
 ```
 
 ## Architecture
 
-WinDown 3000 is a ground-up port of MacDown 3000 from Objective-C/Cocoa to C++/Qt:
+WinDown 3000 is a ground-up C++/Qt port of MacDown 3000 (Objective-C/Cocoa):
 
-| MacDown 3000 | WinDown 3000 | Purpose |
-|---|---|---|
-| NSTextView | QPlainTextEdit | Markdown editor |
-| WebView (WebKit) | WebView2 / QWebEngineView | Live preview |
-| PEG Markdown Highlight | QSyntaxHighlighter | Editor highlighting |
-| Hoedown | Hoedown | Markdown-to-HTML |
-| Prism.js | Prism.js | Code highlighting |
-| MathJax | MathJax | Math rendering |
-| NSUserDefaults | QSettings | Preferences |
-| Cocoa/AppKit | Qt Widgets | UI framework |
+| Component | Technology |
+|---|---|
+| Markdown parsing | [Hoedown](https://github.com/hoedown/hoedown) (C library) |
+| Editor | QPlainTextEdit + QSyntaxHighlighter |
+| Preview | WebView2 (Windows) / QWebEngineView (dev) |
+| Code highlighting | [Prism.js](https://prismjs.com) |
+| Math rendering | [MathJax](https://www.mathjax.org) |
+| Diagrams | [Mermaid](https://mermaid.js.org) + Graphviz |
+| Settings | QSettings |
+
+## Testing
+
+128 tests across 6 test suites run on every commit:
+
+```
+test_markdown_renderer  — 35 tests (rendering, extensions, templates)
+test_theme_parser       —  9 tests (theme file parsing)
+test_preferences        — 35 tests (defaults, persistence, signals)
+test_document           — 16 tests (file I/O, state management)
+test_editor             — 20 tests (editing, auto-complete, formatting)
+test_find_replace       — 13 tests (search, replace, regex)
+```
 
 ## License
 
-WinDown 3000 is released under the MIT License. See the `LICENSE` directory for details.
-
-Editor themes and CSS files from [Mou](http://mouapp.com) are courtesy of Chen Luo.
+MIT License. See the `LICENSE` directory for details.
 
 ## Credits
 
 - [MacDown 3000](https://github.com/schuyler/macdown3000) by Schuyler Erle
 - [MacDown](https://macdown.uranusjr.com) by Tzu-ping Chung
 - [Mou](http://25.io/mou/) by Chen Luo
-- [Hoedown](https://github.com/hoedown/hoedown) for Markdown parsing
-- [Prism](https://prismjs.com) for syntax highlighting
-- [MathJax](https://www.mathjax.org) for math rendering
-- [Mermaid](https://mermaid.js.org) for diagrams
 
 ## Contributing
 
-Contributions are welcome! Please [file an issue](https://github.com/andreshofmann/WinDown3000/issues/new) for bug reports, feature requests, or questions.
+Contributions welcome! [File an issue](https://github.com/andreshofmann/WinDown3000/issues/new) for bugs, features, or questions.

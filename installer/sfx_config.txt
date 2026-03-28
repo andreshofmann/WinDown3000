@@ -1,0 +1,5 @@
+;!@Install@!UTF-8!
+Title="WinDown 3000"
+RunProgram="WinDown3000.exe"
+GUIMode="2"
+;!@InstallEnd@!
