@@ -184,12 +184,7 @@ void FindReplaceDialog::replaceAll()
     QString replacement = m_replaceField->text();
     if (term.isEmpty()) return;
 
-    QTextCursor cur = m_editor->textCursor();
-    cur.movePosition(QTextCursor::Start);
-    m_editor->setTextCursor(cur);
-
     int count = 0;
-    cur.beginEditBlock();
 
     if (m_useRegex->isChecked()) {
         QRegularExpression re(term);
@@ -197,24 +192,29 @@ void FindReplaceDialog::replaceAll()
             re.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 
         QString text = m_editor->toPlainText();
-        QString newText = text.replace(re, replacement);
-        if (newText != text) {
-            // Select all and replace with modified text
-            QTextCursor replaceCur = m_editor->textCursor();
-            replaceCur.select(QTextCursor::Document);
-            replaceCur.insertText(newText);
-            // Count matches
-            auto it = re.globalMatch(text);
-            while (it.hasNext()) { it.next(); count++; }
+        // Count matches before replacing
+        auto it = re.globalMatch(text);
+        while (it.hasNext()) { it.next(); count++; }
+
+        if (count > 0) {
+            QString newText = text;
+            newText.replace(re, replacement);
+            QTextCursor cur = m_editor->textCursor();
+            cur.select(QTextCursor::Document);
+            cur.insertText(newText);
         }
     } else {
+        QTextCursor cur = m_editor->textCursor();
+        cur.movePosition(QTextCursor::Start);
+        m_editor->setTextCursor(cur);
+
         while (m_editor->find(term, buildFlags())) {
-            m_editor->textCursor().insertText(replacement);
+            QTextCursor found = m_editor->textCursor();
+            found.insertText(replacement);
             count++;
         }
     }
 
-    cur.endEditBlock();
     m_statusLabel->setText(count > 0
         ? tr("Replaced %1 occurrence(s).").arg(count)
         : tr("No matches found."));
