@@ -36,6 +36,11 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel
 
+      - name: Run tests
+        run: ctest --test-dir build --build-config Release --output-on-failure --timeout 120
+        env:
+          QT_QPA_PLATFORM: offscreen
+
       - name: Package portable zip
         shell: pwsh
         run: |
