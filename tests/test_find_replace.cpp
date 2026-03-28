@@ -29,14 +29,17 @@ protected:
     }
     QPushButton *findButton(const QString &text) {
         for (auto *btn : dialog->findChildren<QPushButton *>()) {
-            if (btn->text().contains(text, Qt::CaseInsensitive))
+            QString label = btn->text().remove('&');
+            if (label.contains(text, Qt::CaseInsensitive))
                 return btn;
         }
         return nullptr;
     }
     QCheckBox *checkBox(const QString &text) {
         for (auto *cb : dialog->findChildren<QCheckBox *>()) {
-            if (cb->text().contains(text, Qt::CaseInsensitive))
+            // Remove mnemonic '&' before comparing
+            QString label = cb->text().remove('&');
+            if (label.contains(text, Qt::CaseInsensitive))
                 return cb;
         }
         return nullptr;

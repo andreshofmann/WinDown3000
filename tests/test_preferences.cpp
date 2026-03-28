@@ -6,6 +6,10 @@
 class PreferencesTest : public ::testing::Test {
 protected:
     void SetUp() override {
+        // Clear persisted settings so each test gets fresh defaults
+        QSettings s("WinDown3000", "WinDown 3000");
+        s.clear();
+        s.sync();
         prefs = new Preferences();
     }
     void TearDown() override {
