@@ -30,7 +30,13 @@ PREF_STRING("editor/styleName",   editorStyleName,   setEditorStyleName,   "Tomo
 
 QFont Preferences::editorFont() const
 {
+#ifdef Q_OS_WIN
     QFont def("Consolas", 14);
+#elif defined(Q_OS_MACOS)
+    QFont def("Menlo", 14);
+#else
+    QFont def("Monospace", 14);
+#endif
     def.setStyleHint(QFont::Monospace);
     QString family = m_settings.value("editor/fontFamily", def.family()).toString();
     int size = m_settings.value("editor/fontSize", def.pointSize()).toInt();

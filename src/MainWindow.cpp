@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
     }
     m_splitter->setStretchFactor(0, 1);
     m_splitter->setStretchFactor(1, 1);
+    m_splitter->setChildrenCollapsible(false);
     setCentralWidget(m_splitter);
 
     createActions();
@@ -55,6 +56,31 @@ MainWindow::MainWindow(QWidget *parent)
     createToolBar();
     createStatusBar();
     restoreWindowState();
+
+    // Set initial 50/50 split if no saved state
+    if (m_splitter->sizes().at(0) == 0 || m_splitter->sizes().at(1) == 0) {
+        m_splitter->setSizes({600, 600});
+    }
+
+    // Welcome content for new documents
+    if (m_document->isUntitled()) {
+        QString welcome =
+            "# Welcome to WinDown 3000\n\n"
+            "Start typing Markdown here and see it rendered live on the right.\n\n"
+            "## Features\n\n"
+            "- **Bold**, *italic*, ~~strikethrough~~\n"
+            "- [Links](https://github.com/andreshofmann/WinDown3000)\n"
+            "- Task lists: \n"
+            "  - [x] Live preview\n"
+            "  - [x] Syntax highlighting\n"
+            "  - [ ] Your next great document\n\n"
+            "## Code\n\n"
+            "```python\nprint(\"Hello, WinDown 3000!\")\n```\n";
+        m_editor->blockSignals(true);
+        m_editor->setPlainText(welcome);
+        m_editor->blockSignals(false);
+        m_document->setMarkdown(welcome);
+    }
 
     // Wire up editor → document → preview
     connect(m_editor, &QPlainTextEdit::textChanged, this, &MainWindow::onTextChanged);

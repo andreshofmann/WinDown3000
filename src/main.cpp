@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("3000.0.4");
     app.setOrganizationName("WinDown3000");
     app.setOrganizationDomain("windown3000.app");
-    app.setWindowIcon(QIcon(":/icons/windown3000.png"));
+    app.setWindowIcon(QIcon(":/icons/windown3000.svg"));
 
     // Apply saved theme
     Preferences prefs;

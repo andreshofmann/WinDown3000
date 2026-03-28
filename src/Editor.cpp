@@ -6,6 +6,7 @@
 #include <QRegularExpression>
 #include <QScrollBar>
 #include <QTextBlock>
+#include <QTextBlockFormat>
 #include <QTimer>
 #include <QPalette>
 
@@ -50,7 +51,14 @@ void Editor::applyPreferences()
     setFont(m_prefs->editorFont());
     setTabStopDistance(fontMetrics().horizontalAdvance(' ') * 4);
 
-    // Margins
+    // Line spacing — applied via default block format (matches MacDown's NSParagraphStyle)
+    QTextBlockFormat blockFmt;
+    blockFmt.setLineHeight(m_prefs->editorLineSpacing(), QTextBlockFormat::LineDistanceHeight);
+    QTextCursor cur = textCursor();
+    cur.select(QTextCursor::Document);
+    cur.mergeBlockFormat(blockFmt);
+
+    // Margins (matches MacDown's textContainerInset)
     int h = m_prefs->editorHorizontalInset();
     int v = m_prefs->editorVerticalInset();
     setViewportMargins(h, v, h, 0);
