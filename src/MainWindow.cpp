@@ -18,6 +18,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QPainter>
 #include <QPrinter>
 #include <QScrollBar>
 #include <QSettings>
@@ -431,8 +432,21 @@ void MainWindow::createToolBar()
     toolbar->setIconSize(QSize(20, 20));
     toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
+    // MacDown icons are black template images (alpha masks).
+    // Tint them to a medium gray so they're visible on both light and dark backgrounds.
     auto icon = [](const QString &name) {
-        return QIcon(QStringLiteral(":/icons/toolbar/%1.png").arg(name));
+        QPixmap src(QStringLiteral(":/icons/toolbar/%1.png").arg(name));
+        if (src.isNull()) return QIcon();
+        // Paint with a visible color using the alpha channel as a mask
+        QPixmap tinted(src.size());
+        tinted.fill(Qt::transparent);
+        QPainter p(&tinted);
+        p.setCompositionMode(QPainter::CompositionMode_Source);
+        p.drawPixmap(0, 0, src);
+        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+        p.fillRect(tinted.rect(), QColor(80, 80, 80));  // dark gray, visible on light toolbar
+        p.end();
+        return QIcon(tinted);
     };
 
     // -- Shift Left / Shift Right --

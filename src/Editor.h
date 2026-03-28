@@ -41,6 +41,7 @@ private:
     void insertMatchingChar(QChar opening, QChar closing);
     bool shouldAutoClose(QChar ch) const;
     void updateWordCount();
+    void toggleWrap(const QString &before, const QString &after);
     void wrapSelection(const QString &before, const QString &after);
 
     MarkdownHighlighter *m_highlighter;

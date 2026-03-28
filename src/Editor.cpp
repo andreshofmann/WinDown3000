@@ -247,12 +247,12 @@ void Editor::handleTab(bool shift)
 
 void Editor::toggleBold()
 {
-    wrapSelection("**", "**");
+    toggleWrap("**", "**");
 }
 
 void Editor::toggleItalic()
 {
-    wrapSelection("*", "*");
+    toggleWrap("*", "*");
 }
 
 void Editor::indentSelection()
@@ -306,6 +306,46 @@ void Editor::insertMatchingChar(QChar opening, QChar closing)
 bool Editor::shouldAutoClose(QChar) const
 {
     return m_prefs->editorCompleteMatchingCharacters();
+}
+
+void Editor::toggleWrap(const QString &before, const QString &after)
+{
+    QTextCursor cur = textCursor();
+    if (cur.hasSelection()) {
+        int start = cur.selectionStart();
+        int end = cur.selectionEnd();
+        QString selected = cur.selectedText();
+
+        // Check if selection is already wrapped — unwrap it
+        if (selected.startsWith(before) && selected.endsWith(after) &&
+            selected.length() > before.length() + after.length()) {
+            QString inner = selected.mid(before.length(),
+                                         selected.length() - before.length() - after.length());
+            cur.insertText(inner);
+            cur.setPosition(start);
+            cur.setPosition(start + inner.length(), QTextCursor::KeepAnchor);
+            setTextCursor(cur);
+            return;
+        }
+
+        // Check if text around the selection has the markers — unwrap
+        QString fullText = toPlainText();
+        int beforeStart = start - before.length();
+        int afterEnd = end + after.length();
+        if (beforeStart >= 0 && afterEnd <= fullText.length() &&
+            fullText.mid(beforeStart, before.length()) == before &&
+            fullText.mid(end, after.length()) == after) {
+            cur.setPosition(beforeStart);
+            cur.setPosition(afterEnd, QTextCursor::KeepAnchor);
+            cur.insertText(selected);
+            cur.setPosition(beforeStart);
+            cur.setPosition(beforeStart + selected.length(), QTextCursor::KeepAnchor);
+            setTextCursor(cur);
+            return;
+        }
+    }
+    // Not already wrapped — wrap it
+    wrapSelection(before, after);
 }
 
 void Editor::wrapSelection(const QString &before, const QString &after)
