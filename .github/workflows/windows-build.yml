@@ -3,11 +3,7 @@ name: Windows Build
 on:
   push:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'resources/**'
-      - 'CMakeLists.txt'
-      - '.github/workflows/windows-build.yml'
+    tags: ['v*']
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -15,15 +11,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        arch: [x64]
-        build_type: [Release]
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
@@ -38,29 +28,38 @@ jobs:
       - name: Configure CMake
         run: >
           cmake -B build
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          -DCMAKE_BUILD_TYPE=Release
           -DWINDOWN_USE_WEBVIEW2=OFF
           -G "Visual Studio 17 2022"
-          -A ${{ matrix.arch }}
+          -A x64
 
       - name: Build
-        run: cmake --build build --config ${{ matrix.build_type }} --parallel
+        run: cmake --build build --config Release --parallel
 
-      - name: Deploy Qt dependencies
+      - name: Package
+        shell: pwsh
         run: |
-          mkdir deploy
-          copy build\${{ matrix.build_type }}\WinDown3000.exe deploy\
-          windeployqt deploy\WinDown3000.exe --release --no-translations --no-opengl-sw
+          New-Item -ItemType Directory -Path deploy
+          Copy-Item build\Release\WinDown3000.exe deploy\
+          & windeployqt deploy\WinDown3000.exe --release --no-translations --no-opengl-sw --no-system-d3d-compiler
+          # Create a zip for release
+          Compress-Archive -Path deploy\* -DestinationPath WinDown3000-Windows-x64.zip
 
-      - name: Upload artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: WinDown3000-${{ matrix.arch }}
+          name: WinDown3000-Windows-x64
           path: deploy/
+
+      - name: Upload zip artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinDown3000-Windows-x64-zip
+          path: WinDown3000-Windows-x64.zip
 
   release:
     needs: build
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -68,14 +67,22 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: WinDown3000-x64
-          path: WinDown3000-x64
+          name: WinDown3000-Windows-x64-zip
 
-      - name: Zip release
-        run: cd WinDown3000-x64 && zip -r ../WinDown3000-x64.zip .
-
-      - name: Create Release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: WinDown3000-x64.zip
+          name: "WinDown 3000 ${{ github.ref_name }}"
+          files: WinDown3000-Windows-x64.zip
           generate_release_notes: true
+          body: |
+            ## WinDown 3000 ${{ github.ref_name }}
+
+            A fast, lightweight Markdown editor for Windows.
+
+            ### Download
+
+            Download **WinDown3000-Windows-x64.zip**, extract, and run `WinDown3000.exe`. No installer needed.
+
+            ### Requirements
+            - Windows 10 or later (x64)
