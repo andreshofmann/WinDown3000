@@ -55,19 +55,18 @@ jobs:
       - name: Create single-file exe (7-Zip SFX)
         shell: pwsh
         run: |
-          # Install 7-Zip
+          # Install 7-Zip (includes the SFX module)
           choco install 7zip -y --no-progress
           $7z = "C:\Program Files\7-Zip\7z.exe"
+
           # Create 7z archive of the deploy folder
           & $7z a -t7z -mx=9 -ms=on app.7z .\deploy\*
-          # Download 7-Zip SFX module (console-less GUI version)
-          Invoke-WebRequest -Uri "https://raw.githubusercontent.com/nicholasgasior/7zsfxmm/master/7zSD.sfx" -OutFile 7zSD.sfx
-          # If above fails, use 7-Zip's own SFX module
-          if (-not (Test-Path 7zSD.sfx)) {
-            Copy-Item "C:\Program Files\7-Zip\7z.sfx" 7zSD.sfx
-          }
+
+          # Use 7-Zip's own SFX module (ships with the install)
+          $sfxPath = "C:\Program Files\7-Zip\7z.sfx"
+
           # Concatenate: SFX module + config + archive = single exe
-          $sfx = [System.IO.File]::ReadAllBytes("7zSD.sfx")
+          $sfx = [System.IO.File]::ReadAllBytes($sfxPath)
           $cfg = [System.IO.File]::ReadAllBytes("installer\sfx_config.txt")
           $arc = [System.IO.File]::ReadAllBytes("app.7z")
           $out = New-Object byte[] ($sfx.Length + $cfg.Length + $arc.Length)
@@ -75,7 +74,7 @@ jobs:
           [System.Buffer]::BlockCopy($cfg, 0, $out, $sfx.Length, $cfg.Length)
           [System.Buffer]::BlockCopy($arc, 0, $out, $sfx.Length + $cfg.Length, $arc.Length)
           [System.IO.File]::WriteAllBytes("WinDown3000-SingleFile.exe", $out)
-          Write-Host "Single-file exe size: $((Get-Item WinDown3000-SingleFile.exe).Length / 1MB) MB"
+          Write-Host "Single-file exe size: $([math]::Round((Get-Item WinDown3000-SingleFile.exe).Length / 1MB, 1)) MB"
 
       - name: Build installer
         shell: pwsh
