@@ -126,8 +126,8 @@ void PreviewWidget::printToPdf(const QString &filePath)
 #include <QPageLayout>
 #include <QPageSize>
 
-/// Custom page that blocks navigation to external links and handles
-/// checkbox toggle URLs.
+/// Custom page that blocks all external navigation.
+/// Only allows setHtml content loads. Link clicks open in system browser.
 class PreviewPage : public QWebEnginePage
 {
     Q_OBJECT
@@ -137,20 +137,29 @@ signals:
     void checkboxToggled(int index);
     void linkClicked(const QUrl &url);
 protected:
-    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool) override
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override
     {
-        // Allow initial content load
-        if (type != NavigationTypeLinkClicked)
-            return true;
+        Q_UNUSED(isMainFrame);
 
         // Handle checkbox toggle scheme
-        if (url.scheme() == "x-windown-checkbox" && url.host() == "toggle") {
-            int idx = url.path().mid(1).toInt();
-            emit checkboxToggled(idx);
+        if (url.scheme() == "x-windown-checkbox") {
+            if (url.host() == "toggle") {
+                int idx = url.path().mid(1).toInt();
+                emit checkboxToggled(idx);
+            }
             return false;
         }
 
-        // Block all link navigation — open external links in system browser
+        // Allow setHtml content loads (blank page or data URL)
+        if (type == NavigationTypeTyped)
+            return true;
+
+        // Allow initial page load of about:blank or data: content
+        if (url.scheme() == "data" || url.toString() == "about:blank")
+            return true;
+
+        // Everything else (link clicks, redirects, etc.) — block navigation
+        // Open http/https links in system browser
         if (url.scheme() == "http" || url.scheme() == "https") {
             QDesktopServices::openUrl(url);
         }
