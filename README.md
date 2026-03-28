@@ -1,144 +1,129 @@
-# MacDown 3000
+# WinDown 3000
 
-[![Tests](https://github.com/schuyler/macdown3000/workflows/Tests/badge.svg)](https://github.com/schuyler/macdown3000/actions)
-[![Downloads](https://img.shields.io/github/downloads/schuyler/macdown3000/total)](https://github.com/schuyler/macdown3000/releases)
+[![Windows Build](https://github.com/andreshofmann/WinDown3000/workflows/Windows%20Build/badge.svg)](https://github.com/andreshofmann/WinDown3000/actions)
 
-MacDown 3000 is a free Markdown editor for macOS, available under the MIT License. It continues the legacy started by Chen Luo's [Mou](http://25.io/mou/) and carried forward by Tzu-ping Chung's [MacDown](https://macdown.uranusjr.com).
+WinDown 3000 is a free, lightweight Markdown editor for Windows with live preview. It is a port of [MacDown 3000](https://github.com/schuyler/macdown3000), which continues the legacy started by Chen Luo's [Mou](http://25.io/mou/) and carried forward by Tzu-ping Chung's [MacDown](https://macdown.uranusjr.com).
 
-Visit the [project website](https://schuyler.github.io/macdown3000/) for more information, or download from the [releases](https://github.com/schuyler/macdown3000/releases) page.
+Download from the [releases](https://github.com/andreshofmann/WinDown3000/releases) page.
 
-## About MacDown 3000
+## About WinDown 3000
 
-In 2026, there's still a need for a modern, lightweight Markdown editor for macOS with live preview capabilities. MacDown 3000 is essentially *MacDown Continued*. The focus is on keeping MacDown up to date with modern Markdown best practices and maintaining compatibility with current library dependencies.
-
-MacDown 3000 supports macOS 11.0 (Big Sur) and later on both Apple Silicon and Intel Macs.
-
-This project honors the original intentions and contributions of both Mou and MacDown while ensuring that this valuable tool remains available and actively maintained for today's Mac users.
-
-## Download & Install
-
-**Version 3000.0.4** - Available Now
-
-### Homebrew
-
-The easiest way to install MacDown 3000 is with [Homebrew](https://brew.sh):
-
-```bash
-brew install --cask macdown-3000
-```
-
-### Manual Download
-
-Download the latest release from the [GitHub Releases](https://github.com/schuyler/macdown3000/releases) page. Open the DMG file and drag MacDown 3000 to your Applications folder.
+WinDown 3000 brings the MacDown experience to Windows. Built with Qt and C++, it is fast, portable, and ships as a single executable with no installer required.
 
 ### System Requirements
 
-- macOS 11.0 (Big Sur) or later
-- Universal binary supporting both:
-  - Apple Silicon (M-series processors)
-  - Intel x86_64 processors
-
-## Screenshot
-
-![screenshot](assets/screenshot.png)
+- Windows 10 or later (x64)
+- Microsoft Edge WebView2 Runtime (pre-installed on Windows 10/11)
 
 ## Features
 
 ### Live Preview & Markdown Rendering
 
-MacDown 3000 uses Hoedown to convert Markdown to HTML with live preview as you type. It supports:
+WinDown 3000 uses [Hoedown](https://github.com/hoedown/hoedown) to convert Markdown to HTML with live preview as you type. It supports:
 
+- **GitHub Flavored Markdown** including tables, strikethrough, and autolinks
 - **Fenced code blocks** with language identifiers
-- **GitHub Flavored Markdown** including tables, strikethrough (enabled by default), and autolinks
-- **Task lists** for GFM-style checkboxes
+- **Task lists** with interactive checkboxes
+- **Footnotes**, superscript, highlight, and underline extensions
 - **Customizable rendering options** in Preferences
 
 ### Syntax Highlighting
 
-Code blocks get syntax highlighting via Prism, supporting numerous programming and markup languages.
+- **Editor**: Markdown syntax highlighting with 15 editor themes ported from MacDown
+- **Preview**: Code block highlighting via [Prism](https://prismjs.com) supporting 200+ languages
 
-### Additional Rendering Tools
+### Additional Rendering
 
-- **Math notation** using TeX-like syntax ($$...$$, \[...\], \(...\), and optional $...$ blocks)
-- **Jekyll front-matter** for static site generators
-- **Export to HTML or PDF** with customizable styling
+- **Math notation** via MathJax (`$$...$$`, `\[...\]`, `\(...\)`, optional `$...$`)
+- **Diagrams** via Mermaid (flowcharts, sequence, Gantt) and Graphviz
+- **Jekyll front-matter** support
+- **Export to HTML or PDF**
 
 ### Editor Features
 
-- **Auto-completion**: Automatic bracket and quote pairing, list continuation, and formatting shortcuts (customizable or disable)
-- **Universal binary**: Built natively for both Apple Silicon (M-series) and Intel Macs
-- **Modern Markdown**: Supports CommonMark and GitHub Flavored Markdown
+- **Auto-completion**: Bracket/quote pairing, smart list continuation, auto-numbered lists
+- **Scroll sync**: Bidirectional editor-preview scroll synchronization
+- **Smart paste**: Paste a URL over selected text to create a Markdown link
+- **Formatting toolbar**: Bold, italic, headings, lists, links, images, code
+- **Keyboard shortcuts**: Full set matching MacDown 3000
+- **Drag-and-drop**: Open files by dropping them onto the window
+- **Word count**: Live word and character count in the status bar
 
-## Development
+### Themes
+
+**Editor themes** (ported from MacDown 3000):
+Mou Fresh Air, Mou Night, Mou Paper, Solarized Light/Dark, Tomorrow, Tomorrow Blue, Writer (+ enhanced variants)
+
+**Preview CSS themes**:
+GitHub, GitHub2, GitHub 2020, GitHub Tomorrow (dark), Clearness, Clearness Dark, Solarized Light/Dark
+
+## Building from Source
 
 ### Requirements
 
-If you wish to build MacDown 3000 yourself, you will need the following components/tools:
+- CMake 3.21+
+- Qt 6.5+ (with WebEngine module for development builds)
+- C++17 compiler (MSVC 2019+ recommended on Windows)
+- Git
 
-* macOS SDK (11.0 or later)
-* Git
-* [Bundler](http://bundler.io)
+### Build (Windows)
 
-> Note: Old versions of CocoaPods are not supported. Please use Bundler to execute CocoaPods, or make sure your CocoaPods is later than shown in `Gemfile.lock`.
+```bash
+git clone https://github.com/andreshofmann/WinDown3000.git
+cd WinDown3000
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+```
 
-> Note: The Command Line Tools (CLT) should be unnecessary. If you failed to compile without it, please install CLT with
->
->     xcode-select --install
->
-> and report back.
+### Build (Development on macOS/Linux)
 
-An appropriate SDK should be bundled with recent versions of Xcode.
+For development, the app falls back to QWebEngineView instead of WebView2:
 
-### Environment Setup
+```bash
+cmake -B build -DWINDOWN_USE_WEBVIEW2=OFF
+cmake --build build
+```
 
-After cloning the repository, run the following commands inside the repository root (directory containing this `README.md` file):
+### Static Single-Exe Build
 
-    git submodule update --init
-    bundle install
-    bundle exec pod install
-    make -C Dependency/peg-markdown-highlight
+For a fully portable single executable:
 
-and open `MacDown 3000.xcworkspace` in Xcode. The first command initialises the dependency submodule(s) used in MacDown 3000; the second one installs dependencies managed by CocoaPods.
+```bash
+cmake -B build -DCMAKE_BUILD_TYPE=Release -DWINDOWN_STATIC_BUILD=ON -DCMAKE_PREFIX_PATH=/path/to/static-qt
+cmake --build build --config Release
+```
 
-Refer to the official guides of Git and CocoaPods if you need more instructions. If you run into build issues later on, try running the following commands to update dependencies:
+## Architecture
 
-    git submodule update
-    bundle exec pod install
+WinDown 3000 is a ground-up port of MacDown 3000 from Objective-C/Cocoa to C++/Qt:
+
+| MacDown 3000 | WinDown 3000 | Purpose |
+|---|---|---|
+| NSTextView | QPlainTextEdit | Markdown editor |
+| WebView (WebKit) | WebView2 / QWebEngineView | Live preview |
+| PEG Markdown Highlight | QSyntaxHighlighter | Editor highlighting |
+| Hoedown | Hoedown | Markdown-to-HTML |
+| Prism.js | Prism.js | Code highlighting |
+| MathJax | MathJax | Math rendering |
+| NSUserDefaults | QSettings | Preferences |
+| Cocoa/AppKit | Qt Widgets | UI framework |
 
 ## License
 
-MacDown 3000 is released under the terms of MIT License. You may find the content of the license [on opensource.org](http://opensource.org/licenses/MIT), or inside the `LICENSE` directory.
+WinDown 3000 is released under the MIT License. See the `LICENSE` directory for details.
 
-You may find full text of licenses about third-party components in the `LICENSE` directory, or the **About MacDown 3000** panel in the application.
+Editor themes and CSS files from [Mou](http://mouapp.com) are courtesy of Chen Luo.
 
-The following editor themes and CSS files are extracted from [Mou](http://mouapp.com), courtesy of Chen Luo:
+## Credits
 
-* Mou Fresh Air
-* Mou Fresh Air+
-* Mou Night
-* Mou Night+
-* Mou Paper
-* Mou Paper+
-* Tomorrow
-* Tomorrow Blue
-* Tomorrow+
-* Writer
-* Writer+
-* Clearness
-* Clearness Dark
-* GitHub
-* GitHub2
+- [MacDown 3000](https://github.com/schuyler/macdown3000) by Schuyler Erle
+- [MacDown](https://macdown.uranusjr.com) by Tzu-ping Chung
+- [Mou](http://25.io/mou/) by Chen Luo
+- [Hoedown](https://github.com/hoedown/hoedown) for Markdown parsing
+- [Prism](https://prismjs.com) for syntax highlighting
+- [MathJax](https://www.mathjax.org) for math rendering
+- [Mermaid](https://mermaid.js.org) for diagrams
 
-## Contributing & Support
+## Contributing
 
-MacDown 3000 is Free Software under the MIT License. Contributions are welcome!
-
-Please [file an issue](https://github.com/schuyler/macdown3000/issues/new) on GitHub for bug reports, feature requests, or questions. **Please search first to make sure no-one has reported the same issue already** before opening one yourself.
-
-MacDown 3000 depends on other open source projects, such as [Hoedown](https://github.com/hoedown/hoedown) for Markdown-to-HTML rendering, [Prism](http://prismjs.com) for syntax highlighting (in code blocks), and [PEG Markdown Highlight](https://github.com/ali-rantakari/peg-markdown-highlight) for editor highlighting. If you find problems when using those particular features, you can also consider reporting them directly to upstream projects as well as to MacDown 3000's issue tracker.
-
-## Support MacDown 3000
-
-Donations help cover the cost of the Apple developer license ($99/year). Any proceeds beyond our maintenance costs will be donated to the [Signal Foundation](https://signal.org/donate/).
-
-[Donate via PayPal](https://www.paypal.com/donate/?business=22WG7CGNSSF8C&no_recurring=0&amount=5&item_name=Thank+you+for+supporting+MacDown+3000.+Once+our+maintenance+costs+are+covered%2C+further+donations+will+go+the+Signal+Foundation.&currency_code=USD)
+Contributions are welcome! Please [file an issue](https://github.com/andreshofmann/WinDown3000/issues/new) for bug reports, feature requests, or questions.

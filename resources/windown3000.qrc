@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/">
+        <!-- Preview CSS themes -->
+        <file alias="styles/Clearness.css">styles/Clearness.css</file>
+        <file alias="styles/Clearness Dark.css">styles/Clearness Dark.css</file>
+        <file alias="styles/GitHub.css">styles/GitHub.css</file>
+        <file alias="styles/GitHub2.css">styles/GitHub2.css</file>
+        <file alias="styles/GitHub-2020.css">styles/GitHub-2020.css</file>
+        <file alias="styles/GitHub Tomorrow.css">styles/GitHub Tomorrow.css</file>
+        <file alias="styles/Solarized (Light).css">styles/Solarized (Light).css</file>
+        <file alias="styles/Solarized (Dark).css">styles/Solarized (Dark).css</file>
+
+        <!-- Editor themes -->
+        <file alias="themes/Mou Fresh Air.style">themes/Mou Fresh Air.style</file>
+        <file alias="themes/Mou Fresh Air+.style">themes/Mou Fresh Air+.style</file>
+        <file alias="themes/Mou Night.style">themes/Mou Night.style</file>
+        <file alias="themes/Mou Night+.style">themes/Mou Night+.style</file>
+        <file alias="themes/Mou Paper.style">themes/Mou Paper.style</file>
+        <file alias="themes/Mou Paper+.style">themes/Mou Paper+.style</file>
+        <file alias="themes/Solarized (Dark).style">themes/Solarized (Dark).style</file>
+        <file alias="themes/Solarized (Dark)+.style">themes/Solarized (Dark)+.style</file>
+        <file alias="themes/Solarized (Light).style">themes/Solarized (Light).style</file>
+        <file alias="themes/Solarized (Light)+.style">themes/Solarized (Light)+.style</file>
+        <file alias="themes/Tomorrow.style">themes/Tomorrow.style</file>
+        <file alias="themes/Tomorrow+.style">themes/Tomorrow+.style</file>
+        <file alias="themes/Tomorrow Blue.style">themes/Tomorrow Blue.style</file>
+        <file alias="themes/Writer.style">themes/Writer.style</file>
+        <file alias="themes/Writer+.style">themes/Writer+.style</file>
+
+        <!-- Extensions -->
+        <file alias="extensions/tasklist.js">extensions/tasklist.js</file>
+        <file alias="extensions/mermaid.min.js">extensions/mermaid.min.js</file>
+        <file alias="extensions/mermaid.init.js">extensions/mermaid.init.js</file>
+        <file alias="extensions/mermaid.forest.css">extensions/mermaid.forest.css</file>
+        <file alias="extensions/viz.js">extensions/viz.js</file>
+        <file alias="extensions/viz.init.js">extensions/viz.init.js</file>
+    </qresource>
+</RCC>
