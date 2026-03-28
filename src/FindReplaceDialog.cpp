@@ -199,8 +199,10 @@ void FindReplaceDialog::replaceAll()
         QString text = m_editor->toPlainText();
         QString newText = text.replace(re, replacement);
         if (newText != text) {
-            m_editor->selectAll();
-            m_editor->textCursor().insertText(newText);
+            // Select all and replace with modified text
+            QTextCursor replaceCur = m_editor->textCursor();
+            replaceCur.select(QTextCursor::Document);
+            replaceCur.insertText(newText);
             // Count matches
             auto it = re.globalMatch(text);
             while (it.hasNext()) { it.next(); count++; }
