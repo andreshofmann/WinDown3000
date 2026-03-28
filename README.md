@@ -2,9 +2,9 @@
 
 ### The fastest way to view and edit Markdown.
 
-[![Build](https://github.com/andreshofmann/WinDown3000/workflows/Build/badge.svg)](https://github.com/andreshofmann/WinDown3000/actions)
-[![GitHub release](https://img.shields.io/github/v/release/andreshofmann/WinDown3000)](https://github.com/andreshofmann/WinDown3000/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/andreshofmann/WinDown3000/total)](https://github.com/andreshofmann/WinDown3000/releases)
+[![Build](https://github.com/andrewhofmann/WinDown3000/workflows/Build/badge.svg)](https://github.com/andrewhofmann/WinDown3000/actions)
+[![GitHub release](https://img.shields.io/github/v/release/andrewhofmann/WinDown3000)](https://github.com/andrewhofmann/WinDown3000/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/andrewhofmann/WinDown3000/total)](https://github.com/andrewhofmann/WinDown3000/releases)
 
 ---
 
@@ -12,10 +12,10 @@
 
 | Platform | Download | Notes |
 |----------|----------|-------|
-| **macOS** | [WinDown3000-macOS.dmg](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-macOS.dmg) | Drag to Applications |
-| **Windows** | [WinDown3000-SingleFile.exe](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-SingleFile.exe) | Single file, no install needed |
-| Windows (zip) | [WinDown3000-Windows-x64.zip](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-Windows-x64.zip) | Extract and run |
-| Windows (installer) | [WinDown3000-Setup.exe](https://github.com/andreshofmann/WinDown3000/releases/latest) | Start Menu + .md file association |
+| **macOS** | [WinDown3000-macOS.dmg](https://github.com/andrewhofmann/WinDown3000/releases/latest/download/WinDown3000-macOS.dmg) | Drag to Applications |
+| **Windows** | [WinDown3000-SingleFile.exe](https://github.com/andrewhofmann/WinDown3000/releases/latest/download/WinDown3000-SingleFile.exe) | Single file, no install needed |
+| Windows (zip) | [WinDown3000-Windows-x64.zip](https://github.com/andrewhofmann/WinDown3000/releases/latest/download/WinDown3000-Windows-x64.zip) | Extract and run |
+| Windows (installer) | [WinDown3000-Setup.exe](https://github.com/andrewhofmann/WinDown3000/releases/latest) | Start Menu + .md file association |
 
 ---
 
@@ -100,7 +100,7 @@ Full preferences dialog with control over every aspect: font, theme, margins, Ma
 ### Build
 
 ```bash
-git clone https://github.com/andreshofmann/WinDown3000.git
+git clone https://github.com/andrewhofmann/WinDown3000.git
 cd WinDown3000
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
@@ -146,4 +146,4 @@ MIT License. See the `LICENSE` directory for details.
 
 ## Contributing
 
-Contributions welcome! [File an issue](https://github.com/andreshofmann/WinDown3000/issues/new) for bugs, features, or questions.
+Contributions welcome! [File an issue](https://github.com/andrewhofmann/WinDown3000/issues/new) for bugs, features, or questions.

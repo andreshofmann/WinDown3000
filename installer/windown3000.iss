@@ -2,7 +2,7 @@
 AppName=WinDown 3000
 AppVersion=3000.0.4
 AppPublisher=WinDown3000
-AppPublisherURL=https://github.com/andreshofmann/WinDown3000
+AppPublisherURL=https://github.com/andrewhofmann/WinDown3000
 DefaultDirName={autopf}\WinDown 3000
 DefaultGroupName=WinDown 3000
 OutputBaseFilename=WinDown3000-Setup

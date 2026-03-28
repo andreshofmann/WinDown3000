@@ -72,7 +72,7 @@ MainWindow::MainWindow(QWidget *parent)
             "Start typing Markdown here and see it rendered live on the right.\n\n"
             "## Features\n\n"
             "- **Bold**, *italic*, ~~strikethrough~~\n"
-            "- [Links](https://github.com/andreshofmann/WinDown3000)\n"
+            "- [Links](https://github.com/andrewhofmann/WinDown3000)\n"
             "- Task lists: \n"
             "  - [x] Live preview\n"
             "  - [x] Syntax highlighting\n"
@@ -415,8 +415,8 @@ void MainWindow::createMenus()
                "<p>Based on MacDown 3000 by Schuyler Erle, "
                "which continues the legacy of Mou by Chen Luo "
                "and MacDown by Tzu-ping Chung.</p>"
-               "<p><a href=\"https://github.com/andreshofmann/WinDown3000\">"
-               "github.com/andreshofmann/WinDown3000</a></p>"
+               "<p><a href=\"https://github.com/andrewhofmann/WinDown3000\">"
+               "github.com/andrewhofmann/WinDown3000</a></p>"
                "<p>Licensed under the MIT License.</p>")
             .arg(QApplication::applicationVersion()));
     });
