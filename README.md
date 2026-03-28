@@ -1,24 +1,27 @@
 # WinDown 3000
 
-### The fastest way to view and edit Markdown on Windows.
+### The fastest way to view and edit Markdown.
 
-[![Windows Build](https://github.com/andreshofmann/WinDown3000/workflows/Windows%20Build/badge.svg)](https://github.com/andreshofmann/WinDown3000/actions)
+[![Build](https://github.com/andreshofmann/WinDown3000/workflows/Build/badge.svg)](https://github.com/andreshofmann/WinDown3000/actions)
 [![GitHub release](https://img.shields.io/github/v/release/andreshofmann/WinDown3000)](https://github.com/andreshofmann/WinDown3000/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/andreshofmann/WinDown3000/total)](https://github.com/andreshofmann/WinDown3000/releases)
 
 ---
 
-## [Download WinDown3000-SingleFile.exe](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-SingleFile.exe)
+### Download
 
-**One file. No install. Just run it.**
-
-> Also available as a [portable zip](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-Windows-x64.zip) or [installer with .md file association](https://github.com/andreshofmann/WinDown3000/releases/latest).
+| Platform | Download | Notes |
+|----------|----------|-------|
+| **macOS** | [WinDown3000-macOS.dmg](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-macOS.dmg) | Drag to Applications |
+| **Windows** | [WinDown3000-SingleFile.exe](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-SingleFile.exe) | Single file, no install needed |
+| Windows (zip) | [WinDown3000-Windows-x64.zip](https://github.com/andreshofmann/WinDown3000/releases/latest/download/WinDown3000-Windows-x64.zip) | Extract and run |
+| Windows (installer) | [WinDown3000-Setup.exe](https://github.com/andreshofmann/WinDown3000/releases/latest) | Start Menu + .md file association |
 
 ---
 
 ## What is WinDown 3000?
 
-WinDown 3000 is a free, lightweight **Markdown viewer and editor** for Windows. Open any `.md` file and instantly see a beautifully rendered preview alongside the source. No bloat, no account required, no internet needed.
+WinDown 3000 is a free, lightweight **Markdown viewer and editor** for macOS and Windows. Open any `.md` file and instantly see a beautifully rendered preview alongside the source. No bloat, no account required, no internet needed.
 
 Built with C++ and Qt for native speed. Based on [MacDown 3000](https://github.com/schuyler/macdown3000), the popular macOS Markdown editor.
 
@@ -82,7 +85,8 @@ Full preferences dialog with control over every aspect: font, theme, margins, Ma
 
 ## System Requirements
 
-- Windows 10 or later (x64)
+- **macOS** 11.0 (Big Sur) or later
+- **Windows** 10 or later (x64)
 - No other dependencies
 
 ## Building from Source
