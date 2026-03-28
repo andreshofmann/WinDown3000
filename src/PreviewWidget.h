@@ -37,10 +37,14 @@ public:
     /// Set the scroll position (0.0 to 1.0).
     void setScrollPosition(qreal fraction);
 
+    /// Print the current content to a PDF file.
+    void printToPdf(const QString &filePath);
+
 signals:
     void scrollPositionChanged(qreal fraction);
     void linkClicked(const QUrl &url);
     void checkboxToggled(int index);
+    void pdfExportFinished(bool success);
 
 private:
     void initWebView();

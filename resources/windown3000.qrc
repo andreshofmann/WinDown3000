@@ -27,6 +27,9 @@
         <file alias="themes/Writer.style">themes/Writer.style</file>
         <file alias="themes/Writer+.style">themes/Writer+.style</file>
 
+        <!-- App icon -->
+        <file alias="icons/windown3000.svg">icons/windown3000.svg</file>
+
         <!-- Extensions -->
         <file alias="extensions/tasklist.js">extensions/tasklist.js</file>
         <file alias="extensions/mermaid.min.js">extensions/mermaid.min.js</file>

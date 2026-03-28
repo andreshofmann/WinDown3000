@@ -4,6 +4,7 @@
 
 class Document;
 class Editor;
+class FindReplaceDialog;
 class PreviewWidget;
 class Preferences;
 
@@ -42,6 +43,7 @@ private:
     void onSaveAs();
     void onExportHtml();
     void onExportPdf();
+    void onFindReplace();
     void onTextChanged();
     void onHtmlReady(const QString &html);
     void onPreferencesDialog();
@@ -62,6 +64,7 @@ private:
     PreviewWidget *m_preview;
     QSplitter *m_splitter;
     QLabel *m_wordCountLabel;
+    FindReplaceDialog *m_findReplace = nullptr;
 
     // State
     bool m_syncingScroll = false;

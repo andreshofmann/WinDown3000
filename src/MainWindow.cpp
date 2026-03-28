@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include "Document.h"
 #include "Editor.h"
+#include "FindReplaceDialog.h"
+#include "PreferencesDialog.h"
 #include "PreviewWidget.h"
 #include "Preferences.h"
 
@@ -155,9 +157,23 @@ void MainWindow::onExportPdf()
         tr("PDF Files (*.pdf)"));
     if (path.isEmpty()) return;
 
-    // PDF export via the preview's print-to-PDF
-    // For QWebEngineView, use printToPdf; for WebView2, use PrintToPdf API
-    m_preview->runJavaScript(QStringLiteral("window.print();"));
+    // Ensure preview has the latest content before exporting
+    m_document->renderNow();
+    m_preview->printToPdf(path);
+    connect(m_preview, &PreviewWidget::pdfExportFinished, this, [this, path](bool success) {
+        if (success)
+            statusBar()->showMessage(tr("PDF exported to %1").arg(path), 5000);
+        else
+            QMessageBox::warning(this, tr("Export Failed"),
+                tr("Failed to export PDF."));
+    }, Qt::SingleShotConnection);
+}
+
+void MainWindow::onFindReplace()
+{
+    if (!m_findReplace)
+        m_findReplace = new FindReplaceDialog(m_editor, this);
+    m_findReplace->showWithSelection();
 }
 
 bool MainWindow::maybeSave()
@@ -306,9 +322,11 @@ void MainWindow::createMenus()
     editMenu->addAction(tr("Select &All"), m_editor, &QPlainTextEdit::selectAll,
                         QKeySequence::SelectAll);
     editMenu->addSeparator();
-    editMenu->addAction(tr("&Find..."), m_editor, [this]() {
-        // TODO: find/replace dialog
-    }, QKeySequence::Find);
+    editMenu->addAction(tr("&Find and Replace..."), this, &MainWindow::onFindReplace,
+                        QKeySequence::Find);
+    // Also bind Ctrl+H for Replace
+    editMenu->addAction(tr("&Replace..."), this, &MainWindow::onFindReplace,
+                        QKeySequence(tr("Ctrl+H")));
 
     // Format menu
     QMenu *formatMenu = menuBar()->addMenu(tr("F&ormat"));
@@ -478,10 +496,8 @@ void MainWindow::onTogglePreview()
 // ---------------------------------------------------------------------------
 void MainWindow::onPreferencesDialog()
 {
-    // TODO: full preferences dialog
-    QMessageBox::information(this, tr("Preferences"),
-        tr("Preferences dialog coming soon.\n"
-           "Settings are stored in the system registry."));
+    PreferencesDialog dialog(m_prefs, this);
+    dialog.exec();
 }
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,25 @@
+IDI_ICON1 ICON "icons\\windown3000.ico"
+
+1 VERSIONINFO
+FILEVERSION     3000,0,4,0
+PRODUCTVERSION  3000,0,4,0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "WinDown3000"
+            VALUE "FileDescription",  "WinDown 3000 - Markdown Editor"
+            VALUE "FileVersion",      "3000.0.4"
+            VALUE "InternalName",     "WinDown3000"
+            VALUE "LegalCopyright",   "MIT License"
+            VALUE "OriginalFilename", "WinDown3000.exe"
+            VALUE "ProductName",      "WinDown 3000"
+            VALUE "ProductVersion",   "3000.0.4"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

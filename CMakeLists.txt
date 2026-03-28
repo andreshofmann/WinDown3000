@@ -63,15 +63,22 @@ endif()
 # ---------------------------------------------------------------------------
 set(WINDOWN_SOURCES
     src/main.cpp
-    src/MainWindow.h        src/MainWindow.cpp
-    src/Document.h          src/Document.cpp
-    src/Editor.h            src/Editor.cpp
-    src/MarkdownHighlighter.h src/MarkdownHighlighter.cpp
-    src/MarkdownRenderer.h  src/MarkdownRenderer.cpp
-    src/PreviewWidget.h     src/PreviewWidget.cpp
-    src/Preferences.h       src/Preferences.cpp
-    src/ThemeParser.h       src/ThemeParser.cpp
+    src/MainWindow.h            src/MainWindow.cpp
+    src/Document.h              src/Document.cpp
+    src/Editor.h                src/Editor.cpp
+    src/FindReplaceDialog.h     src/FindReplaceDialog.cpp
+    src/MarkdownHighlighter.h   src/MarkdownHighlighter.cpp
+    src/MarkdownRenderer.h      src/MarkdownRenderer.cpp
+    src/PreferencesDialog.h     src/PreferencesDialog.cpp
+    src/PreviewWidget.h         src/PreviewWidget.cpp
+    src/Preferences.h           src/Preferences.cpp
+    src/ThemeParser.h           src/ThemeParser.cpp
 )
+
+# Windows resource file (icon + version info)
+if(WIN32)
+    list(APPEND WINDOWN_SOURCES resources/windown3000.rc)
+endif()
 
 # ---------------------------------------------------------------------------
 # Resources

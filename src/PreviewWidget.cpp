@@ -97,6 +97,24 @@ void PreviewWidget::setScrollPosition(qreal fraction)
         .arg(fraction));
 }
 
+void PreviewWidget::printToPdf(const QString &filePath)
+{
+    if (m_webview) {
+        // WebView2 PrintToPdf API
+        wil::com_ptr<ICoreWebView2_7> webview7;
+        if (SUCCEEDED(m_webview->QueryInterface(IID_PPV_ARGS(&webview7)))) {
+            wil::com_ptr<ICoreWebView2PrintSettings> settings;
+            // Use default print settings
+            webview7->PrintToPdf(filePath.toStdWString().c_str(), nullptr,
+                Microsoft::WRL::Callback<ICoreWebView2PrintToPdfCompletedHandler>(
+                    [this](HRESULT hr, BOOL success) -> HRESULT {
+                        emit pdfExportFinished(SUCCEEDED(hr) && success);
+                        return S_OK;
+                    }).Get());
+        }
+    }
+}
+
 #else
 // =========================================================================
 // QWebEngineView implementation (fallback for non-Windows / development)
@@ -104,6 +122,8 @@ void PreviewWidget::setScrollPosition(qreal fraction)
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebEngineSettings>
+#include <QPageLayout>
+#include <QPageSize>
 
 PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
     : QWidget(parent)
@@ -159,6 +179,16 @@ void PreviewWidget::setScrollPosition(qreal fraction)
         "document.documentElement.scrollTop = %1 * "
         "(document.documentElement.scrollHeight - document.documentElement.clientHeight);")
         .arg(fraction));
+}
+
+void PreviewWidget::printToPdf(const QString &filePath)
+{
+    m_webView->page()->printToPdf(filePath, QPageLayout(
+        QPageSize(QPageSize::A4), QPageLayout::Portrait, QMarginsF(15, 15, 15, 15)));
+    connect(m_webView->page(), &QWebEnginePage::pdfPrintingFinished,
+            this, [this](const QString &, bool success) {
+                emit pdfExportFinished(success);
+            });
 }
 
 #endif // WINDOWN_USE_WEBVIEW2

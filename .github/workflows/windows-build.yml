@@ -22,7 +22,7 @@ jobs:
           host: windows
           target: desktop
           arch: win64_msvc2019_64
-          modules: qtwebengine
+          modules: qtwebengine qtwebchannel qtpositioning
           cache: true
 
       - name: Configure CMake
@@ -36,26 +36,34 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      - name: Package
+      - name: Package portable zip
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path deploy
           Copy-Item build\Release\WinDown3000.exe deploy\
           & windeployqt deploy\WinDown3000.exe --release --no-translations --no-opengl-sw --no-system-d3d-compiler
-          # Create a zip for release
           Compress-Archive -Path deploy\* -DestinationPath WinDown3000-Windows-x64.zip
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: WinDown3000-Windows-x64
-          path: deploy/
+      - name: Build installer
+        shell: pwsh
+        run: |
+          choco install innosetup -y --no-progress
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer\windown3000.iss
+        continue-on-error: true
 
-      - name: Upload zip artifact
+      - name: Upload portable zip
         uses: actions/upload-artifact@v4
         with:
           name: WinDown3000-Windows-x64-zip
           path: WinDown3000-Windows-x64.zip
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        if: hashFiles('installer/Output/WinDown3000-Setup.exe') != ''
+        with:
+          name: WinDown3000-Setup
+          path: installer/Output/WinDown3000-Setup.exe
+        continue-on-error: true
 
   release:
     needs: build
@@ -69,20 +77,31 @@ jobs:
         with:
           name: WinDown3000-Windows-x64-zip
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: WinDown3000-Setup
+        continue-on-error: true
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           name: "WinDown 3000 ${{ github.ref_name }}"
-          files: WinDown3000-Windows-x64.zip
+          files: |
+            WinDown3000-Windows-x64.zip
+            WinDown3000-Setup.exe
+          fail_on_unmatched_files: false
           generate_release_notes: true
           body: |
             ## WinDown 3000 ${{ github.ref_name }}
 
             A fast, lightweight Markdown editor for Windows.
 
-            ### Download
+            ### Downloads
 
-            Download **WinDown3000-Windows-x64.zip**, extract, and run `WinDown3000.exe`. No installer needed.
+            | File | Description |
+            |------|-------------|
+            | **WinDown3000-Windows-x64.zip** | Portable version - extract and run, no install needed |
+            | **WinDown3000-Setup.exe** | Installer with Start Menu shortcuts and .md file association |
 
             ### Requirements
             - Windows 10 or later (x64)
