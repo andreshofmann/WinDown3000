@@ -6,11 +6,9 @@
 #include <QRegularExpression>
 
 // Hoedown C headers
-extern "C" {
 #include "document.h"
 #include "html.h"
 #include "buffer.h"
-}
 
 MarkdownRenderer::MarkdownRenderer(Preferences *prefs, QObject *parent)
     : QObject(parent)
@@ -44,9 +42,10 @@ unsigned int MarkdownRenderer::hoedownExtensions() const
 unsigned int MarkdownRenderer::hoedownHtmlFlags() const
 {
     unsigned int flags = 0;
-    if (m_prefs->htmlTaskList())    flags |= HOEDOWN_HTML_USE_TASK_LIST;
-    if (m_prefs->htmlHardWrap())    flags |= HOEDOWN_HTML_HARD_WRAP;
-    if (m_prefs->htmlLineNumbers()) flags |= HOEDOWN_HTML_BLOCKCODE_LINE_NUMBERS;
+    if (m_prefs->htmlHardWrap()) flags |= HOEDOWN_HTML_HARD_WRAP;
+    // Note: HOEDOWN_HTML_USE_TASK_LIST and HOEDOWN_HTML_BLOCKCODE_LINE_NUMBERS
+    // are MacDown-specific patches not in upstream Hoedown 3.0.7.
+    // Task list rendering is handled via post-processing instead.
     return flags;
 }
 
