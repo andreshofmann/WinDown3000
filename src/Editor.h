@@ -21,6 +21,10 @@ public:
 
     MarkdownHighlighter *highlighter() const { return m_highlighter; }
 
+    // Public formatting actions (called from MainWindow menus/toolbar)
+    void toggleBold();
+    void toggleItalic();
+
 signals:
     void wordCountChanged(int words, int chars);
 

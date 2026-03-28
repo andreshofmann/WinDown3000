@@ -237,6 +237,16 @@ void Editor::handleTab(bool shift)
     }
 }
 
+void Editor::toggleBold()
+{
+    wrapSelection("**", "**");
+}
+
+void Editor::toggleItalic()
+{
+    wrapSelection("*", "*");
+}
+
 void Editor::handleBackspace()
 {
     if (m_prefs->editorCompleteMatchingCharacters()) {

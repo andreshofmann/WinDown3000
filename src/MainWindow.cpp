@@ -2,6 +2,7 @@
 #include "Document.h"
 #include "Editor.h"
 #include "FindReplaceDialog.h"
+#include "MarkdownRenderer.h"
 #include "PreferencesDialog.h"
 #include "PreviewWidget.h"
 #include "Preferences.h"
@@ -330,12 +331,10 @@ void MainWindow::createMenus()
 
     // Format menu
     QMenu *formatMenu = menuBar()->addMenu(tr("F&ormat"));
-    formatMenu->addAction(tr("&Bold"), m_editor, [this]() {
-        m_editor->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_B, Qt::ControlModifier));
-    }, QKeySequence::Bold);
-    formatMenu->addAction(tr("&Italic"), m_editor, [this]() {
-        m_editor->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_I, Qt::ControlModifier));
-    }, QKeySequence::Italic);
+    formatMenu->addAction(tr("&Bold"), m_editor, &Editor::toggleBold,
+                          QKeySequence::Bold);
+    formatMenu->addAction(tr("&Italic"), m_editor, &Editor::toggleItalic,
+                          QKeySequence::Italic);
     formatMenu->addSeparator();
 
     // Header sub-menu
@@ -396,13 +395,11 @@ void MainWindow::createToolBar()
     QToolBar *toolbar = addToolBar(tr("Formatting"));
     toolbar->setMovable(false);
 
-    toolbar->addAction(tr("B"), [this]() {
-        m_editor->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_B, Qt::ControlModifier));
-    })->setToolTip(tr("Bold (Ctrl+B)"));
+    toolbar->addAction(tr("B"), m_editor, &Editor::toggleBold)
+        ->setToolTip(tr("Bold (Ctrl+B)"));
 
-    toolbar->addAction(tr("I"), [this]() {
-        m_editor->keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_I, Qt::ControlModifier));
-    })->setToolTip(tr("Italic (Ctrl+I)"));
+    toolbar->addAction(tr("I"), m_editor, &Editor::toggleItalic)
+        ->setToolTip(tr("Italic (Ctrl+I)"));
 
     toolbar->addSeparator();
 
