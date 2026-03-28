@@ -415,6 +415,8 @@ void MainWindow::createMenus()
                "<p>Based on MacDown 3000 by Schuyler Erle, "
                "which continues the legacy of Mou by Chen Luo "
                "and MacDown by Tzu-ping Chung.</p>"
+               "<p><a href=\"https://github.com/andreshofmann/WinDown3000\">"
+               "github.com/andreshofmann/WinDown3000</a></p>"
                "<p>Licensed under the MIT License.</p>")
             .arg(QApplication::applicationVersion()));
     });
