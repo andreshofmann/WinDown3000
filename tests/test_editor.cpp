@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <QApplication>
+#include <QSignalSpy>
 #include <QTest>
 #include <QTextCursor>
 #include "Editor.h"
