@@ -281,7 +281,11 @@ void MainWindow::onCheckboxToggled(int index)
     QTextCursor cur = m_editor->textCursor();
     int pos = cur.position();
     m_editor->setPlainText(updated);
-    cur.setPosition(qMin(pos, m_editor->document()->characterCount() - 1));
+    int charCount = m_editor->document()->characterCount();
+    if (charCount > 0)
+        cur.setPosition(qMin(pos, charCount - 1));
+    else
+        cur.movePosition(QTextCursor::Start);
     m_editor->setTextCursor(cur);
     m_editor->blockSignals(false);
     m_document->setMarkdown(updated);
@@ -353,9 +357,6 @@ void MainWindow::createMenus()
     editMenu->addSeparator();
     editMenu->addAction(tr("&Find and Replace..."), this, &MainWindow::onFindReplace,
                         QKeySequence::Find);
-    // Also bind Ctrl+H for Replace
-    editMenu->addAction(tr("&Replace..."), this, &MainWindow::onFindReplace,
-                        QKeySequence(tr("Ctrl+H")));
 
     // Format menu
     QMenu *formatMenu = menuBar()->addMenu(tr("F&ormat"));
@@ -431,24 +432,19 @@ void MainWindow::createToolBar()
 
     QToolBar *toolbar = addToolBar(tr("Formatting"));
     toolbar->setMovable(false);
-    toolbar->setIconSize(QSize(20, 20));
+    toolbar->setIconSize(QSize(24, 24));
     toolbar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    // MacDown icons are black template images (alpha masks).
-    // Tint them to a medium gray so they're visible on both light and dark backgrounds.
+    // Load toolbar icon — use raw black template images as-is.
+    // On macOS the toolbar renders these with proper system contrast.
+    // On Windows/dark themes, we invert to white.
     auto icon = [](const QString &name) {
         QPixmap src(QStringLiteral(":/icons/toolbar/%1.png").arg(name));
         if (src.isNull()) return QIcon();
-        // Paint with a visible color using the alpha channel as a mask
-        QPixmap tinted(src.size());
-        tinted.fill(Qt::transparent);
-        QPainter p(&tinted);
-        p.setCompositionMode(QPainter::CompositionMode_Source);
-        p.drawPixmap(0, 0, src);
-        p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-        p.fillRect(tinted.rect(), QColor(80, 80, 80));  // dark gray, visible on light toolbar
-        p.end();
-        return QIcon(tinted);
+        QIcon ic(src);
+        // Mark as template so macOS renders with proper contrast automatically
+        ic.setIsMask(true);
+        return ic;
     };
 
     // -- Shift Left / Shift Right --

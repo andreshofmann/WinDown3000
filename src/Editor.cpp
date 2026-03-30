@@ -52,11 +52,14 @@ void Editor::applyPreferences()
     setTabStopDistance(fontMetrics().horizontalAdvance(' ') * 4);
 
     // Line spacing — applied via default block format (matches MacDown's NSParagraphStyle)
+    // Block signals to prevent triggering re-renders during formatting
+    blockSignals(true);
     QTextBlockFormat blockFmt;
     blockFmt.setLineHeight(m_prefs->editorLineSpacing(), QTextBlockFormat::LineDistanceHeight);
     QTextCursor cur = textCursor();
     cur.select(QTextCursor::Document);
     cur.mergeBlockFormat(blockFmt);
+    blockSignals(false);
 
     // Margins (matches MacDown's textContainerInset)
     int h = m_prefs->editorHorizontalInset();
@@ -204,7 +207,8 @@ void Editor::handleReturn()
         return;
     }
 
-    QPlainTextEdit::keyPressEvent(new QKeyEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier));
+    QKeyEvent returnEvent(QEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    QPlainTextEdit::keyPressEvent(&returnEvent);
 }
 
 void Editor::handleTab(bool shift)
@@ -287,8 +291,8 @@ void Editor::handleBackspace()
         }
     }
 
-    QPlainTextEdit::keyPressEvent(
-        new QKeyEvent(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier));
+    QKeyEvent bsEvent(QEvent::KeyPress, Qt::Key_Backspace, Qt::NoModifier);
+    QPlainTextEdit::keyPressEvent(&bsEvent);
 }
 
 void Editor::insertMatchingChar(QChar opening, QChar closing)
@@ -301,11 +305,6 @@ void Editor::insertMatchingChar(QChar opening, QChar closing)
         cur.movePosition(QTextCursor::Left);
         setTextCursor(cur);
     }
-}
-
-bool Editor::shouldAutoClose(QChar) const
-{
-    return m_prefs->editorCompleteMatchingCharacters();
 }
 
 void Editor::toggleWrap(const QString &before, const QString &after)

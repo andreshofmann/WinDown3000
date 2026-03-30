@@ -103,8 +103,6 @@ void PreviewWidget::printToPdf(const QString &filePath)
         // WebView2 PrintToPdf API
         wil::com_ptr<ICoreWebView2_7> webview7;
         if (SUCCEEDED(m_webview->QueryInterface(IID_PPV_ARGS(&webview7)))) {
-            wil::com_ptr<ICoreWebView2PrintSettings> settings;
-            // Use default print settings
             webview7->PrintToPdf(filePath.toStdWString().c_str(), nullptr,
                 Microsoft::WRL::Callback<ICoreWebView2PrintToPdfCompletedHandler>(
                     [this](HRESULT hr, BOOL success) -> HRESULT {
@@ -121,6 +119,7 @@ void PreviewWidget::printToPdf(const QString &filePath)
 // =========================================================================
 #include <QWebEngineView>
 #include <QWebEnginePage>
+#include <QWebEngineNewWindowRequest>
 #include <QWebEngineSettings>
 #include <QDesktopServices>
 #include <QPageLayout>
@@ -187,6 +186,24 @@ PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
     // Forward signals from custom page
     connect(page, &PreviewPage::checkboxToggled, this, &PreviewWidget::checkboxToggled);
     connect(page, &PreviewPage::linkClicked, this, &PreviewWidget::linkClicked);
+
+    // Block popups / target="_blank" links
+    connect(page, &QWebEnginePage::newWindowRequested, this, [](QWebEngineNewWindowRequest &req) {
+        QUrl url = req.requestedUrl();
+        if (url.scheme() == "http" || url.scheme() == "https")
+            QDesktopServices::openUrl(url);
+        // Don't create a new window — just ignore the request
+    });
+
+    // Block any navigation that slips through (e.g. JS window.location)
+    connect(m_webView, &QWebEngineView::urlChanged, this, [this](const QUrl &url) {
+        // If the URL changed to something other than blank/data, block it
+        if (url.scheme() == "http" || url.scheme() == "https") {
+            QDesktopServices::openUrl(url);
+            // Reload the current content to undo the navigation
+            m_webView->stop();
+        }
+    });
 
     initWebView();
 }

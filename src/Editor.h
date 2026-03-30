@@ -39,7 +39,6 @@ private:
     void handleTab(bool shift);
     void handleBackspace();
     void insertMatchingChar(QChar opening, QChar closing);
-    bool shouldAutoClose(QChar ch) const;
     void updateWordCount();
     void toggleWrap(const QString &before, const QString &after);
     void wrapSelection(const QString &before, const QString &after);

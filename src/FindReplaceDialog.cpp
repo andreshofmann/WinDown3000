@@ -109,13 +109,10 @@ void FindReplaceDialog::findNext()
     bool found = false;
     if (m_useRegex->isChecked()) {
         QRegularExpression re(term);
-        if (m_caseSensitive->isChecked())
-            re.setPatternOptions(QRegularExpression::NoPatternOption);
-        else
+        if (!m_caseSensitive->isChecked())
             re.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
         found = m_editor->find(re);
         if (!found) {
-            // Wrap around
             QTextCursor cur = m_editor->textCursor();
             cur.movePosition(QTextCursor::Start);
             m_editor->setTextCursor(cur);

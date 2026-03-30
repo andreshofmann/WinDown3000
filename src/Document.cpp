@@ -55,9 +55,17 @@ bool Document::save()
 
 bool Document::saveAs(const QString &filePath)
 {
+    // Temporarily stop watching to avoid self-triggering on our own write
+    if (!m_fileWatcher.files().isEmpty())
+        m_fileWatcher.removePaths(m_fileWatcher.files());
+
     QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        // Restore watcher if save failed and we had a previous path
+        if (!m_filePath.isEmpty())
+            m_fileWatcher.addPath(m_filePath);
         return false;
+    }
 
     QString text = m_markdown;
 
@@ -68,10 +76,7 @@ bool Document::saveAs(const QString &filePath)
     QTextStream out(&file);
     out.setEncoding(QStringConverter::Utf8);
     out << text;
-
-    // Update file watcher
-    if (!m_fileWatcher.files().isEmpty())
-        m_fileWatcher.removePaths(m_fileWatcher.files());
+    file.close();
 
     m_filePath = filePath;
     m_fileWatcher.addPath(filePath);

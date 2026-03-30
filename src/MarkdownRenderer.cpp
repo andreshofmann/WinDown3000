@@ -130,6 +130,18 @@ QString MarkdownRenderer::buildScriptTags() const
 {
     QString tags;
 
+    // Intercept all link clicks at the DOM level — prevent any navigation
+    tags += QStringLiteral(
+        "<script>\n"
+        "document.addEventListener('click', function(e) {\n"
+        "  var a = e.target.closest('a');\n"
+        "  if (a && a.href) {\n"
+        "    e.preventDefault();\n"
+        "    e.stopPropagation();\n"
+        "  }\n"
+        "}, true);\n"
+        "</script>\n");
+
     // Prism core + autoloader
     if (m_prefs->htmlSyntaxHighlighting()) {
         QFile prismCore(":/prism/prism.js");
