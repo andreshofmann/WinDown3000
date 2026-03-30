@@ -40,6 +40,9 @@ public:
     /// Print the current content to a PDF file.
     void printToPdf(const QString &filePath);
 
+protected:
+    void resizeEvent(QResizeEvent *event) override;
+
 signals:
     void scrollPositionChanged(qreal fraction);
     void linkClicked(const QUrl &url);

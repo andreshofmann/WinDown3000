@@ -74,11 +74,22 @@ QString MarkdownRenderer::renderToHtml(const QString &markdown) const
 
     hoedown_renderer *renderer = hoedown_html_renderer_new(
         static_cast<hoedown_html_flags>(hoedownHtmlFlags()), 0);
+    if (!renderer) return QString();
 
     hoedown_document *doc = hoedown_document_new(
         renderer, static_cast<hoedown_extensions>(hoedownExtensions()), 16);
+    if (!doc) {
+        hoedown_html_renderer_free(renderer);
+        return QString();
+    }
 
     hoedown_buffer *buf = hoedown_buffer_new(utf8.size());
+    if (!buf) {
+        hoedown_document_free(doc);
+        hoedown_html_renderer_free(renderer);
+        return QString();
+    }
+
     hoedown_document_render(doc, buf,
         reinterpret_cast<const uint8_t *>(utf8.constData()), utf8.size());
 

@@ -15,7 +15,10 @@ EditorTheme EditorTheme::load(const QString &path)
     QString currentBlock;
 
     auto parseColor = [](const QString &hex) -> QColor {
-        return QColor(QStringLiteral("#%1").arg(hex.trimmed()));
+        QColor c(QStringLiteral("#%1").arg(hex.trimmed()));
+        if (!c.isValid())
+            return QColor(0, 0, 0); // fallback to black for malformed values
+        return c;
     };
 
     QTextCharFormat currentFormat;

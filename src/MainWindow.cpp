@@ -374,7 +374,7 @@ void MainWindow::createMenus()
             cur.movePosition(QTextCursor::StartOfBlock);
             // Remove existing heading prefix
             QString line = cur.block().text();
-            static QRegularExpression headRe(R"(^#{1,6}\s*)");
+            static QRegularExpression headRe(R"(^#{1,6}\s+)");
             auto match = headRe.match(line);
             if (match.hasMatch()) {
                 cur.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, match.capturedLength());
@@ -484,7 +484,7 @@ void MainWindow::createToolBar()
         QTextCursor cur = m_editor->textCursor();
         cur.movePosition(QTextCursor::StartOfBlock);
         QString line = cur.block().text();
-        static QRegularExpression headRe(R"(^#{1,6}\s*)");
+        static QRegularExpression headRe(R"(^#{1,6}\s+)");
         auto match = headRe.match(line);
         if (match.hasMatch()) {
             cur.movePosition(QTextCursor::Right, QTextCursor::KeepAnchor, match.capturedLength());

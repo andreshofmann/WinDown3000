@@ -1,6 +1,7 @@
 #include "PreviewWidget.h"
 #include "Preferences.h"
 
+#include <QResizeEvent>
 #include <QVBoxLayout>
 #include <QUrl>
 
@@ -63,6 +64,16 @@ void PreviewWidget::initWebView()
                         }).Get());
                 return S_OK;
             }).Get());
+}
+
+void PreviewWidget::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+    if (m_controller) {
+        RECT bounds;
+        GetClientRect(m_hwnd, &bounds);
+        m_controller->put_Bounds(bounds);
+    }
 }
 
 void PreviewWidget::setHtml(const QString &html, const QUrl &)
@@ -214,6 +225,11 @@ void PreviewWidget::initWebView() {}
 
 // Include the MOC for the PreviewPage class defined in this .cpp
 #include "PreviewWidget.moc"
+
+void PreviewWidget::resizeEvent(QResizeEvent *event)
+{
+    QWidget::resizeEvent(event);
+}
 
 void PreviewWidget::setHtml(const QString &html, const QUrl &baseUrl)
 {

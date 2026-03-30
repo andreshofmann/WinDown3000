@@ -107,10 +107,16 @@ void FindReplaceDialog::findNext()
     if (term.isEmpty()) return;
 
     bool found = false;
+    QTextCursor savedCursor = m_editor->textCursor();
+
     if (m_useRegex->isChecked()) {
         QRegularExpression re(term);
         if (!m_caseSensitive->isChecked())
             re.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        if (!re.isValid()) {
+            m_statusLabel->setText(tr("Invalid regex: %1").arg(re.errorString()));
+            return;
+        }
         found = m_editor->find(re);
         if (!found) {
             QTextCursor cur = m_editor->textCursor();
@@ -128,6 +134,8 @@ void FindReplaceDialog::findNext()
         }
     }
 
+    if (!found)
+        m_editor->setTextCursor(savedCursor);
     m_statusLabel->setText(found ? QString() : tr("No matches found."));
 }
 
@@ -139,10 +147,16 @@ void FindReplaceDialog::findPrevious()
     QTextDocument::FindFlags flags = buildFlags() | QTextDocument::FindBackward;
 
     bool found = false;
+    QTextCursor savedCursor = m_editor->textCursor();
+
     if (m_useRegex->isChecked()) {
         QRegularExpression re(term);
         if (!m_caseSensitive->isChecked())
             re.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        if (!re.isValid()) {
+            m_statusLabel->setText(tr("Invalid regex: %1").arg(re.errorString()));
+            return;
+        }
         found = m_editor->find(re, QTextDocument::FindBackward);
         if (!found) {
             QTextCursor cur = m_editor->textCursor();
@@ -160,6 +174,8 @@ void FindReplaceDialog::findPrevious()
         }
     }
 
+    if (!found)
+        m_editor->setTextCursor(savedCursor);
     m_statusLabel->setText(found ? QString() : tr("No matches found."));
 }
 
@@ -187,6 +203,10 @@ void FindReplaceDialog::replaceAll()
         QRegularExpression re(term);
         if (!m_caseSensitive->isChecked())
             re.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+        if (!re.isValid()) {
+            m_statusLabel->setText(tr("Invalid regex: %1").arg(re.errorString()));
+            return;
+        }
 
         QString text = m_editor->toPlainText();
         // Count matches before replacing
