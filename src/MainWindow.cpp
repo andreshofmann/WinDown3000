@@ -441,10 +441,16 @@ void MainWindow::createToolBar()
     auto icon = [](const QString &name) {
         QPixmap src(QStringLiteral(":/icons/toolbar/%1.png").arg(name));
         if (src.isNull()) return QIcon();
-        QIcon ic(src);
-        // Mark as template so macOS renders with proper contrast automatically
-        ic.setIsMask(true);
-        return ic;
+        // Invert black template icons to white for visibility
+        QImage img = src.toImage().convertToFormat(QImage::Format_ARGB32);
+        for (int y = 0; y < img.height(); y++) {
+            QRgb *line = reinterpret_cast<QRgb *>(img.scanLine(y));
+            for (int x = 0; x < img.width(); x++) {
+                int a = qAlpha(line[x]);
+                line[x] = qRgba(255, 255, 255, a);
+            }
+        }
+        return QIcon(QPixmap::fromImage(img));
     };
 
     // -- Shift Left / Shift Right --
