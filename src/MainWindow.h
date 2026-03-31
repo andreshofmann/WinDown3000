@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QTimer>
 
 class Document;
 class Editor;
@@ -69,4 +70,6 @@ private:
 
     // State
     bool m_syncingScroll = false;
+    qreal m_lastPreviewScroll = 0.0;
+    QTimer *m_scrollSyncTimer = nullptr;
 };

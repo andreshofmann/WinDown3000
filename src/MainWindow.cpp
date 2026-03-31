@@ -128,7 +128,13 @@ void MainWindow::openFile(const QString &path)
     if (m_document->open(path)) {
         m_editor->blockSignals(true);
         m_editor->setPlainText(m_document->markdown());
+        // Start at the top of the document
+        QTextCursor cur = m_editor->textCursor();
+        cur.movePosition(QTextCursor::Start);
+        m_editor->setTextCursor(cur);
+        m_editor->verticalScrollBar()->setValue(0);
         m_editor->blockSignals(false);
+        m_lastPreviewScroll = 0.0;
         updateTitle();
     }
 }
@@ -237,9 +243,17 @@ void MainWindow::onTextChanged()
 
 void MainWindow::onHtmlReady(const QString &html)
 {
+    // Save preview scroll position before re-rendering, then restore after
     m_syncingScroll = true;
+    m_preview->requestScrollPosition();
     m_preview->setHtml(html);
-    m_syncingScroll = false;
+
+    // Restore scroll position after the new content loads
+    // Use a short delay to let QWebEngine finish loading
+    QTimer::singleShot(50, this, [this]() {
+        m_preview->setScrollPosition(m_lastPreviewScroll);
+        m_syncingScroll = false;
+    });
 }
 
 void MainWindow::updateTitle()
@@ -255,17 +269,29 @@ void MainWindow::onEditorScrollChanged()
     if (m_syncingScroll || !m_prefs->editorSyncScrolling())
         return;
 
-    m_syncingScroll = true;
-    QScrollBar *sb = m_editor->verticalScrollBar();
-    if (sb->maximum() > 0) {
-        qreal fraction = static_cast<qreal>(sb->value()) / sb->maximum();
-        m_preview->setScrollPosition(fraction);
+    // Debounce: only sync after scrolling settles (avoids jitter during typing)
+    if (!m_scrollSyncTimer) {
+        m_scrollSyncTimer = new QTimer(this);
+        m_scrollSyncTimer->setSingleShot(true);
+        m_scrollSyncTimer->setInterval(30);
+        connect(m_scrollSyncTimer, &QTimer::timeout, this, [this]() {
+            if (m_syncingScroll) return;
+            m_syncingScroll = true;
+            QScrollBar *sb = m_editor->verticalScrollBar();
+            if (sb->maximum() > 0) {
+                qreal fraction = static_cast<qreal>(sb->value()) / sb->maximum();
+                m_preview->setScrollPosition(fraction);
+            }
+            m_syncingScroll = false;
+        });
     }
-    m_syncingScroll = false;
+    m_scrollSyncTimer->start();
 }
 
 void MainWindow::onPreviewScrollChanged(qreal fraction)
 {
+    m_lastPreviewScroll = fraction;
+
     if (m_syncingScroll || !m_prefs->editorSyncScrolling())
         return;
 
@@ -281,17 +307,24 @@ void MainWindow::onPreviewScrollChanged(qreal fraction)
 void MainWindow::onCheckboxToggled(int index)
 {
     QString updated = MarkdownRenderer::toggleCheckbox(m_document->markdown(), index);
+
+    // Preserve both cursor position and scroll position
     m_editor->blockSignals(true);
     QTextCursor cur = m_editor->textCursor();
     int pos = cur.position();
+    int scrollVal = m_editor->verticalScrollBar()->value();
+
     m_editor->setPlainText(updated);
+
     int charCount = m_editor->document()->characterCount();
     if (charCount > 0)
         cur.setPosition(qMin(pos, charCount - 1));
     else
         cur.movePosition(QTextCursor::Start);
     m_editor->setTextCursor(cur);
+    m_editor->verticalScrollBar()->setValue(scrollVal);
     m_editor->blockSignals(false);
+
     m_document->setMarkdown(updated);
 }
 
@@ -310,31 +343,60 @@ void MainWindow::onPreviewTextDoubleClicked(const QString &data)
     // Suppress scroll sync so the preview stays put
     m_syncingScroll = true;
 
-    // Estimate the target position in the editor based on the click's
-    // vertical fraction in the preview, then search nearby for the text.
+    // Estimate where in the editor this text should be, based on the
+    // click's vertical position in the preview
     int totalChars = m_editor->document()->characterCount();
     int estimatedPos = static_cast<int>(posFraction * totalChars);
-
-    // Start searching from slightly before the estimated position
     int searchStart = qMax(0, estimatedPos - totalChars / 10);
 
     QTextCursor cur = m_editor->textCursor();
     cur.setPosition(searchStart);
     m_editor->setTextCursor(cur);
 
-    // Search forward from the estimated position
-    if (!m_editor->find(text)) {
-        // If not found forward, try from the start as fallback
+    // Try exact text first, then progressively shorter substrings.
+    // The rendered text won't have markdown syntax (** _ ` etc),
+    // so shorter matches are more likely to succeed.
+    bool found = false;
+    QString searchText = text;
+
+    // Try the full text
+    found = m_editor->find(searchText);
+
+    // If not found, try first line only (multi-line rendered text rarely
+    // matches markdown source exactly)
+    if (!found && searchText.contains('\n')) {
+        searchText = searchText.section('\n', 0, 0).trimmed();
+        cur.setPosition(searchStart);
+        m_editor->setTextCursor(cur);
+        found = m_editor->find(searchText);
+    }
+
+    // If still not found, try first few words (handles markdown syntax around text)
+    if (!found && searchText.length() > 20) {
+        QStringList words = searchText.split(' ', Qt::SkipEmptyParts);
+        searchText = words.mid(0, qMin(3, words.size())).join(' ');
+        cur.setPosition(searchStart);
+        m_editor->setTextCursor(cur);
+        found = m_editor->find(searchText);
+    }
+
+    // Last resort: search from the beginning
+    if (!found) {
         cur.movePosition(QTextCursor::Start);
         m_editor->setTextCursor(cur);
-        m_editor->find(text);
+        found = m_editor->find(searchText);
+    }
+
+    if (found) {
+        m_editor->ensureCursorVisible();
+        m_editor->centerCursor();
+    } else {
+        // If nothing found by text, at least scroll to the proportional position
+        QScrollBar *sb = m_editor->verticalScrollBar();
+        sb->setValue(static_cast<int>(posFraction * sb->maximum()));
     }
 
     m_editor->setFocus();
-    // Ensure the found text is scrolled into view, centered vertically
-    m_editor->ensureCursorVisible();
-    m_editor->centerCursor();
-
     QTimer::singleShot(150, this, [this]() { m_syncingScroll = false; });
 }
 
