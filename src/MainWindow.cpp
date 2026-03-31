@@ -331,9 +331,11 @@ void MainWindow::onPreviewTextDoubleClicked(const QString &data)
     }
 
     m_editor->setFocus();
+    // Ensure the found text is scrolled into view, centered vertically
+    m_editor->ensureCursorVisible();
     m_editor->centerCursor();
 
-    QTimer::singleShot(100, this, [this]() { m_syncingScroll = false; });
+    QTimer::singleShot(150, this, [this]() { m_syncingScroll = false; });
 }
 
 // ---------------------------------------------------------------------------
