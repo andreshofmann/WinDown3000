@@ -302,16 +302,20 @@ void MainWindow::onPreviewTextDoubleClicked(const QString &text)
 {
     if (text.isEmpty()) return;
 
-    // Search from the top of the document
+    // Suppress scroll sync so the preview stays put
+    m_syncingScroll = true;
+
     QTextCursor cur = m_editor->textCursor();
     cur.movePosition(QTextCursor::Start);
     m_editor->setTextCursor(cur);
 
-    // Find the text in the editor
     if (m_editor->find(text)) {
         m_editor->setFocus();
         m_editor->centerCursor();
     }
+
+    // Re-enable scroll sync after a brief delay (let the editor settle)
+    QTimer::singleShot(100, this, [this]() { m_syncingScroll = false; });
 }
 
 // ---------------------------------------------------------------------------
