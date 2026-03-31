@@ -298,23 +298,41 @@ void MainWindow::onCheckboxToggled(int index)
 // ---------------------------------------------------------------------------
 // Double-click in preview → find in source
 // ---------------------------------------------------------------------------
-void MainWindow::onPreviewTextDoubleClicked(const QString &text)
+void MainWindow::onPreviewTextDoubleClicked(const QString &data)
 {
+    // Data format: "searchText\x1Fposition" (unit separator between text and pos)
+    int sep = data.indexOf(QChar(0x1F));
+    QString text = (sep >= 0) ? data.left(sep) : data;
+    qreal posFraction = (sep >= 0) ? data.mid(sep + 1).toDouble() : 0.0;
+
     if (text.isEmpty()) return;
 
     // Suppress scroll sync so the preview stays put
     m_syncingScroll = true;
 
+    // Estimate the target position in the editor based on the click's
+    // vertical fraction in the preview, then search nearby for the text.
+    int totalChars = m_editor->document()->characterCount();
+    int estimatedPos = static_cast<int>(posFraction * totalChars);
+
+    // Start searching from slightly before the estimated position
+    int searchStart = qMax(0, estimatedPos - totalChars / 10);
+
     QTextCursor cur = m_editor->textCursor();
-    cur.movePosition(QTextCursor::Start);
+    cur.setPosition(searchStart);
     m_editor->setTextCursor(cur);
 
-    if (m_editor->find(text)) {
-        m_editor->setFocus();
-        m_editor->centerCursor();
+    // Search forward from the estimated position
+    if (!m_editor->find(text)) {
+        // If not found forward, try from the start as fallback
+        cur.movePosition(QTextCursor::Start);
+        m_editor->setTextCursor(cur);
+        m_editor->find(text);
     }
 
-    // Re-enable scroll sync after a brief delay (let the editor settle)
+    m_editor->setFocus();
+    m_editor->centerCursor();
+
     QTimer::singleShot(100, this, [this]() { m_syncingScroll = false; });
 }
 

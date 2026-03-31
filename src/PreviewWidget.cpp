@@ -134,6 +134,7 @@ void PreviewWidget::printToPdf(const QString &filePath)
 #include <QWebEngineSettings>
 #include <QDesktopServices>
 #include <QPageLayout>
+#include <QUrlQuery>
 #include <QPageSize>
 
 /// Custom page that blocks all external navigation.
@@ -163,8 +164,13 @@ protected:
 
         // Handle double-click navigate-to-source scheme
         if (url.scheme() == "x-windown-navigate") {
-            QString text = QUrl::fromPercentEncoding(url.path().mid(1).toUtf8()); // strip leading /
-            emit textDoubleClicked(text);
+            QString text = QUrl::fromPercentEncoding(url.path().mid(1).toUtf8());
+            // Extract position fraction from query param ?pos=0.XXXX
+            qreal posFraction = 0.0;
+            QUrlQuery query(url);
+            if (query.hasQueryItem("pos"))
+                posFraction = query.queryItemValue("pos").toDouble();
+            emit textDoubleClicked(text + QStringLiteral("\x1F") + QString::number(posFraction, 'f', 4));
             return false;
         }
 

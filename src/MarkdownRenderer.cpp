@@ -141,7 +141,7 @@ QString MarkdownRenderer::buildScriptTags() const
 {
     QString tags;
 
-    // Double-click in preview → send text to editor for navigation
+    // Double-click in preview → send text + scroll fraction to editor
     tags += QStringLiteral(
         "<script>\n"
         "document.addEventListener('dblclick', function(e) {\n"
@@ -151,7 +151,11 @@ QString MarkdownRenderer::buildScriptTags() const
         "    if (el) sel = el.textContent.trim().substring(0, 100);\n"
         "  }\n"
         "  if (sel) {\n"
-        "    window.location.href = 'x-windown-navigate://find/' + encodeURIComponent(sel);\n"
+        "    var rect = e.target.getBoundingClientRect();\n"
+        "    var scrollH = document.documentElement.scrollHeight || 1;\n"
+        "    var clickY = (document.documentElement.scrollTop + rect.top) / scrollH;\n"
+        "    window.location.href = 'x-windown-navigate://find/' \n"
+        "      + encodeURIComponent(sel) + '?pos=' + clickY.toFixed(4);\n"
         "  }\n"
         "});\n"
         "</script>\n");
