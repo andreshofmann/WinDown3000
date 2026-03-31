@@ -141,12 +141,29 @@ QString MarkdownRenderer::buildScriptTags() const
 {
     QString tags;
 
-    // Intercept all link clicks at the DOM level — prevent any navigation
+    // Double-click in preview → send text to editor for navigation
+    tags += QStringLiteral(
+        "<script>\n"
+        "document.addEventListener('dblclick', function(e) {\n"
+        "  var sel = window.getSelection().toString().trim();\n"
+        "  if (!sel) {\n"
+        "    var el = e.target.closest('h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,pre,code');\n"
+        "    if (el) sel = el.textContent.trim().substring(0, 100);\n"
+        "  }\n"
+        "  if (sel) {\n"
+        "    window.location.href = 'x-windown-navigate://find/' + encodeURIComponent(sel);\n"
+        "  }\n"
+        "});\n"
+        "</script>\n");
+
+    // Intercept external link clicks — allow in-document anchors (#id)
     tags += QStringLiteral(
         "<script>\n"
         "document.addEventListener('click', function(e) {\n"
         "  var a = e.target.closest('a');\n"
         "  if (a && a.href) {\n"
+        "    var href = a.getAttribute('href');\n"
+        "    if (href && href.startsWith('#')) return;\n"
         "    e.preventDefault();\n"
         "    e.stopPropagation();\n"
         "  }\n"

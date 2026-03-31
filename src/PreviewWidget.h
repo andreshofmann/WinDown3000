@@ -47,6 +47,7 @@ signals:
     void scrollPositionChanged(qreal fraction);
     void linkClicked(const QUrl &url);
     void checkboxToggled(int index);
+    void textDoubleClicked(const QString &text);
     void pdfExportFinished(bool success);
 
 private:

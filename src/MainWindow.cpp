@@ -102,6 +102,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_preview, &PreviewWidget::checkboxToggled,
             this, &MainWindow::onCheckboxToggled);
 
+    // Double-click in preview → navigate to source
+    connect(m_preview, &PreviewWidget::textDoubleClicked,
+            this, &MainWindow::onPreviewTextDoubleClicked);
+
     // Preferences changed
     connect(m_prefs, &Preferences::changed, this, [this]() {
         m_editor->applyPreferences();
@@ -289,6 +293,25 @@ void MainWindow::onCheckboxToggled(int index)
     m_editor->setTextCursor(cur);
     m_editor->blockSignals(false);
     m_document->setMarkdown(updated);
+}
+
+// ---------------------------------------------------------------------------
+// Double-click in preview → find in source
+// ---------------------------------------------------------------------------
+void MainWindow::onPreviewTextDoubleClicked(const QString &text)
+{
+    if (text.isEmpty()) return;
+
+    // Search from the top of the document
+    QTextCursor cur = m_editor->textCursor();
+    cur.movePosition(QTextCursor::Start);
+    m_editor->setTextCursor(cur);
+
+    // Find the text in the editor
+    if (m_editor->find(text)) {
+        m_editor->setFocus();
+        m_editor->centerCursor();
+    }
 }
 
 // ---------------------------------------------------------------------------

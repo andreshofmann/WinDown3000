@@ -145,6 +145,7 @@ public:
     using QWebEnginePage::QWebEnginePage;
 signals:
     void checkboxToggled(int index);
+    void textDoubleClicked(const QString &text);
     void linkClicked(const QUrl &url);
 protected:
     bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override
@@ -160,6 +161,13 @@ protected:
             return false;
         }
 
+        // Handle double-click navigate-to-source scheme
+        if (url.scheme() == "x-windown-navigate") {
+            QString text = QUrl::fromPercentEncoding(url.path().mid(1).toUtf8()); // strip leading /
+            emit textDoubleClicked(text);
+            return false;
+        }
+
         // Allow setHtml content loads (blank page or data URL)
         if (type == NavigationTypeTyped)
             return true;
@@ -168,7 +176,12 @@ protected:
         if (url.scheme() == "data" || url.toString() == "about:blank")
             return true;
 
-        // Everything else (link clicks, redirects, etc.) — block navigation
+        // Allow in-document anchor navigation (e.g. #heading-name for TOC)
+        if (url.hasFragment() && (url.scheme().isEmpty() || url.scheme() == "about" ||
+            url.path().isEmpty() || url.path() == url.toString().section('#', 0, 0)))
+            return true;
+
+        // Everything else — block navigation
         // Open http/https links in system browser
         if (url.scheme() == "http" || url.scheme() == "https") {
             QDesktopServices::openUrl(url);
@@ -196,6 +209,7 @@ PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
 
     // Forward signals from custom page
     connect(page, &PreviewPage::checkboxToggled, this, &PreviewWidget::checkboxToggled);
+    connect(page, &PreviewPage::textDoubleClicked, this, &PreviewWidget::textDoubleClicked);
     connect(page, &PreviewPage::linkClicked, this, &PreviewWidget::linkClicked);
 
     // Block popups / target="_blank" links

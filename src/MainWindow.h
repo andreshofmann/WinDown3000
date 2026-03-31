@@ -52,6 +52,7 @@ private:
     void onEditorScrollChanged();
     void onPreviewScrollChanged(qreal fraction);
     void onCheckboxToggled(int index);
+    void onPreviewTextDoubleClicked(const QString &text);
     void onFileChangedExternally();
     void onWordCountChanged(int words, int chars);
     void updateTitle();
