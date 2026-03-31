@@ -81,6 +81,9 @@ MainWindow::MainWindow(QWidget *parent)
             "```python\nprint(\"Hello, WinDown 3000!\")\n```\n";
         m_editor->blockSignals(true);
         m_editor->setPlainText(welcome);
+        QTextCursor welcomeCur = m_editor->textCursor();
+        welcomeCur.movePosition(QTextCursor::Start);
+        m_editor->setTextCursor(welcomeCur);
         m_editor->blockSignals(false);
         m_document->setMarkdown(welcome);
     }
@@ -92,9 +95,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_document, &Document::fileChangedExternally, this, &MainWindow::onFileChangedExternally);
     connect(m_editor, &Editor::wordCountChanged, this, &MainWindow::onWordCountChanged);
 
-    // Scroll sync
+    // Bidirectional scroll sync:
+    // Editor scrollbar → preview (debounced)
     connect(m_editor->verticalScrollBar(), &QScrollBar::valueChanged,
             this, &MainWindow::onEditorScrollChanged);
+    // Preview JS scroll event → editor
     connect(m_preview, &PreviewWidget::scrollPositionChanged,
             this, &MainWindow::onPreviewScrollChanged);
 
@@ -243,16 +248,18 @@ void MainWindow::onTextChanged()
 
 void MainWindow::onHtmlReady(const QString &html)
 {
-    // Save preview scroll position before re-rendering, then restore after
     m_syncingScroll = true;
-    m_preview->requestScrollPosition();
     m_preview->setHtml(html);
 
-    // Restore scroll position after the new content loads
-    // Use a short delay to let QWebEngine finish loading
-    QTimer::singleShot(50, this, [this]() {
+    // Restore scroll position after the page finishes loading.
+    // Use a short delay to ensure the DOM is fully rendered.
+    QTimer::singleShot(80, this, [this]() {
         m_preview->setScrollPosition(m_lastPreviewScroll);
-        m_syncingScroll = false;
+        // Keep sync suppressed briefly so the scroll-restore doesn't
+        // bounce back to the editor
+        QTimer::singleShot(50, this, [this]() {
+            m_syncingScroll = false;
+        });
     });
 }
 

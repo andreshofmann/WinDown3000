@@ -148,6 +148,7 @@ signals:
     void checkboxToggled(int index);
     void textDoubleClicked(const QString &text);
     void linkClicked(const QUrl &url);
+    void scrolled(qreal fraction);
 protected:
     bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override
     {
@@ -159,6 +160,13 @@ protected:
                 int idx = url.path().mid(1).toInt();
                 emit checkboxToggled(idx);
             }
+            return false;
+        }
+
+        // Handle scroll sync from preview JS
+        if (url.scheme() == "x-windown-scroll") {
+            qreal frac = url.path().mid(1).toDouble();
+            emit scrolled(frac);
             return false;
         }
 
@@ -217,6 +225,7 @@ PreviewWidget::PreviewWidget(Preferences *prefs, QWidget *parent)
     connect(page, &PreviewPage::checkboxToggled, this, &PreviewWidget::checkboxToggled);
     connect(page, &PreviewPage::textDoubleClicked, this, &PreviewWidget::textDoubleClicked);
     connect(page, &PreviewPage::linkClicked, this, &PreviewWidget::linkClicked);
+    connect(page, &PreviewPage::scrolled, this, &PreviewWidget::scrollPositionChanged);
 
     // Block popups / target="_blank" links
     connect(page, &QWebEnginePage::newWindowRequested, this, [](QWebEngineNewWindowRequest &req) {

@@ -141,28 +141,32 @@ QString MarkdownRenderer::buildScriptTags() const
 {
     QString tags;
 
-    // Double-click in preview → send text + scroll fraction to editor
+    // Preview interaction scripts
     tags += QStringLiteral(
         "<script>\n"
-        "document.addEventListener('dblclick', function(e) {\n"
-        "  var sel = window.getSelection().toString().trim();\n"
-        "  if (!sel) {\n"
-        "    var el = e.target.closest('h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,pre,code');\n"
-        "    if (el) sel = el.textContent.trim().substring(0, 100);\n"
-        "  }\n"
-        "  if (sel) {\n"
-        "    var rect = e.target.getBoundingClientRect();\n"
-        "    var scrollH = document.documentElement.scrollHeight || 1;\n"
-        "    var clickY = (document.documentElement.scrollTop + rect.top) / scrollH;\n"
-        "    window.location.href = 'x-windown-navigate://find/' \n"
-        "      + encodeURIComponent(sel) + '?pos=' + clickY.toFixed(4);\n"
-        "  }\n"
+        // Double-click in preview → navigate to source
+        // Only fires if the user double-clicked without dragging a selection
+        "var _wd_mouseDownPos = null;\n"
+        "document.addEventListener('mousedown', function(e) {\n"
+        "  _wd_mouseDownPos = {x: e.clientX, y: e.clientY};\n"
         "});\n"
-        "</script>\n");
-
-    // Intercept external link clicks — allow in-document anchors (#id)
-    tags += QStringLiteral(
-        "<script>\n"
+        "document.addEventListener('dblclick', function(e) {\n"
+        "  if (_wd_mouseDownPos) {\n"
+        "    var dx = Math.abs(e.clientX - _wd_mouseDownPos.x);\n"
+        "    var dy = Math.abs(e.clientY - _wd_mouseDownPos.y);\n"
+        "    if (dx > 5 || dy > 5) return;\n"  // ignore drag-selects
+        "  }\n"
+        "  var el = e.target.closest('h1,h2,h3,h4,h5,h6,p,li,td,th,blockquote,pre,code,span');\n"
+        "  if (!el) return;\n"
+        "  var text = el.textContent.trim().substring(0, 120);\n"
+        "  if (!text) return;\n"
+        "  var scrollH = document.documentElement.scrollHeight || 1;\n"
+        "  var clickY = (document.documentElement.scrollTop + e.clientY) / scrollH;\n"
+        "  window.location.href = 'x-windown-navigate://find/'\n"
+        "    + encodeURIComponent(text) + '?pos=' + clickY.toFixed(4);\n"
+        "});\n"
+        "\n"
+        // Intercept external link clicks — allow in-document anchors (#id)
         "document.addEventListener('click', function(e) {\n"
         "  var a = e.target.closest('a');\n"
         "  if (a && a.href) {\n"
@@ -172,6 +176,19 @@ QString MarkdownRenderer::buildScriptTags() const
         "    e.stopPropagation();\n"
         "  }\n"
         "}, true);\n"
+        "\n"
+        // Forward scroll events from preview to Qt for bidirectional sync
+        "var _wd_scrollTimer = null;\n"
+        "window.addEventListener('scroll', function() {\n"
+        "  clearTimeout(_wd_scrollTimer);\n"
+        "  _wd_scrollTimer = setTimeout(function() {\n"
+        "    var h = document.documentElement.scrollHeight - document.documentElement.clientHeight;\n"
+        "    if (h > 0) {\n"
+        "      var frac = document.documentElement.scrollTop / h;\n"
+        "      window.location.href = 'x-windown-scroll://pos/' + frac.toFixed(6);\n"
+        "    }\n"
+        "  }, 50);\n"
+        "});\n"
         "</script>\n");
 
     // Prism core + autoloader
